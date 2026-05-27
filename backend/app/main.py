@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import app.infrastructure.celery_app  # noqa: F401
+from app.infrastructure import celery_app  # noqa: F401
 
 from fastapi import FastAPI
 
@@ -11,7 +11,7 @@ from app.adapters.inbound.api.v1 import (
     routes_search,
 )
 
-app = FastAPI(  # noqa: F811
+app = FastAPI(
     title="MindVault AI Backend",
     description="Multi-tenant RAG SaaS backend APIs",
     version="0.1.0",
