@@ -15,8 +15,11 @@ class VectorStore(ABC):
         query_vector: List[float],
         org_id: str,
         top_k: int = 5,
+        limit: int = 50,
+        alpha: float = 0.5,
+        user_reranker: bool = True,
         namespace: Optional[str] = None
     ) -> List[Dict[str, Any]]: ...
 
     @abstractmethod
-    async def delete_by_doc_id(self, *, doc_id: str, org_id: str) -> None: ...
+    async def delete_by_document_id(self, *, document_id: str, org_id: str) -> None: ...
