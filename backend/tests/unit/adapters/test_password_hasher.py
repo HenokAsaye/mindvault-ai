@@ -1,5 +1,3 @@
-"""Unit tests for bcrypt password hasher adapter."""
-
 from __future__ import annotations
 
 import pytest
