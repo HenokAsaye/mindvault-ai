@@ -180,7 +180,7 @@ class TokenService:
 
 
 class InvitationService:
-    """Invite token binds to persisted row id: issuer|invite_id|org_id|email|role|exp|sig."""
+    """Invite token: issuer|invite_id|org_id|email|role|exp|sig."""
 
     def __init__(self, *, secret: str, issuer: str) -> None:
         self._secret = secret.encode("utf-8")
@@ -202,7 +202,10 @@ class InvitationService:
         )
         normalized_email = email.strip().lower()
         normalized_role = role.strip().lower()
-        blob = f"{self._issuer}|{invite_id}|{org_id}|{normalized_email}|{normalized_role}|{exp}"
+        parts = [
+            self._issuer, invite_id, org_id, normalized_email, normalized_role, str(exp)
+        ]
+        blob = "|".join(parts)
         sig = hmac.new(self._secret, blob.encode("utf-8"), hashlib.sha256).hexdigest()
         return f"{blob}|{sig}"
 
