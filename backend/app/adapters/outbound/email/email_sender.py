@@ -32,8 +32,8 @@ class NullEmailSender(EmailSender):
 
 class SmtpEmailSender(EmailSender):
     """
-    Renders ``invitation_email.mjml`` with Jinja, compiles MJML to HTML via the ``mjml`` CLI,
-    and sends mail over SMTP (e.g. Gmail :587 STARTTLS or Brevo SMTP).
+    Renders ``invitation_email.mjml`` with Jinja, compiles MJML to HTML via the
+    ``mjml`` CLI, and sends mail over SMTP (e.g. Gmail :587 STARTTLS or Brevo SMTP).
     """
 
     def __init__(
@@ -89,7 +89,8 @@ class SmtpEmailSender(EmailSender):
             logger.info("Compiled MJML invitation template successfully")
         except (RuntimeError, OSError, FileNotFoundError) as exc:
             logger.warning(
-                "MJML CLI unavailable or failed (%s); sending invitation with simple HTML instead.",
+                "MJML CLI unavailable or failed (%s); "
+                "sending invitation with simple HTML instead.",
                 exc,
             )
             html_body = self._simple_invitation_html(
@@ -104,7 +105,10 @@ class SmtpEmailSender(EmailSender):
         msg["From"] = f"{self._from_name} <{self._from_email}>"
         msg["To"] = to_email
         msg.set_content(
-            f"You've been invited to join {org_name} on MindVault as {role}.\n\nAccept here:\n{invite_url}\n"
+            (
+                f"You've been invited to join {org_name} on MindVault as {role}.\n\n"
+                f"Accept here:\n{invite_url}\n"
+            )
         )
         msg.add_alternative(html_body, subtype="html")
 
@@ -151,12 +155,19 @@ class SmtpEmailSender(EmailSender):
         safe_url = html_module.escape(invite_url, quote=True)
         exp_block = ""
         if expires_in_hours:
-            exp_block = f"<p>This invitation expires in <strong>{int(expires_in_hours)}</strong> hours.</p>"
+            exp_block = (
+                "<p>This invitation expires in <strong>"
+                f"{int(expires_in_hours)}"
+                "</strong> hours.</p>"
+            )
         return (
-            '<!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;line-height:1.5;">'
-            f"<p>You've been invited to join <strong>{safe_org}</strong> on MindVault as <strong>{safe_role}</strong>.</p>"
+            "<!DOCTYPE html>"
+            "<html><body style=\"font-family:system-ui,sans-serif;line-height:1.5;\">"
+            f"<p>You've been invited to join <strong>{safe_org}</strong> on MindVault "
+            f"as <strong>{safe_role}</strong>.</p>"
             f"{exp_block}"
             f'<p><a href="{safe_url}">Accept invitation</a></p>'
-            f'<p style="font-size:0.9em;color:#555;">If the button does not work, copy this link:<br>{safe_url}</p>'
+            f"<p style=\"font-size:0.9em;color:#555;\">If the button does not work, "
+            f"copy this link:<br>{safe_url}</p>"
             "</body></html>"
         )
