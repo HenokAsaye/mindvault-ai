@@ -45,7 +45,8 @@ def send_organization_invitation_email(
     if isinstance(sender, NullEmailSender):
         logger.warning(
             "Invitation email to %s was not sent: SMTP disabled or incomplete config. "
-            "Set SMTP_HOST, SMTP_FROM_EMAIL, and either SMTP_ENABLED=true or SMTP_PASSWORD. "
+            "Set SMTP_HOST, SMTP_FROM_EMAIL, and either SMTP_ENABLED=true or "
+            "SMTP_PASSWORD. "
             "current: host=%r from=%r enabled=%s has_password=%s",
             to_email,
             settings.smtp_host,

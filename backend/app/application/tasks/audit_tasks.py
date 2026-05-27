@@ -1,11 +1,3 @@
-"""Audit log tasks via Celery (shared_task — no direct ``celery_app`` import).
-
-Uses **synchronous** SQLAlchemy + psycopg2 in the worker (see
-``app.adapters.outbound.db.celery_worker_db``). Do not use the async
-``SessionFactory`` here: it shares an asyncpg pool tied to the API event loop,
-which breaks under Celery prefork + ``asyncio.run()``.
-"""
-
 from __future__ import annotations
 
 import logging
