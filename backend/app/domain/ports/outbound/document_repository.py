@@ -1,11 +1,3 @@
-"""Outbound port for the ``documents`` table.
-
-Two surfaces:
-  * ``DocumentRepository`` — async surface used by the API.
-  * ``SyncDocumentRepository`` — sync surface used by Celery workers
-    (psycopg2 + a sync session, see ``celery_worker_db.py``).
-"""
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -35,6 +27,17 @@ class DocumentRepository(ABC):
         page_size: int = 20,
         status: str | None = None,
     ) -> tuple[list[Document], int]: ...
+
+    @abstractmethod
+    async def find_by_checksum(
+        self, *, org_id: UUID, checksum: str
+    ) -> Document | None: ...
+
+    @abstractmethod
+    async def count_by_org(self, org_id: str) -> int: ...
+
+    @abstractmethod
+    async def count_failed_by_org(self, org_id: str) -> int: ...
 
     @abstractmethod
     async def update_status(
