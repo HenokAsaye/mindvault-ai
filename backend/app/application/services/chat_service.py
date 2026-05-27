@@ -5,12 +5,15 @@ from datetime import datetime
 from typing import AsyncGenerator
 from uuid import UUID
 
+from app.application.services.hybrid_search_service import HybridSearchService
 from app.domain.entities.chat_message import ChatMessage
-from app.domain.ports.outbound.embedding_provider import EmbeddingProvider
 from app.domain.ports.outbound.llm_port import LLMPort
+from app.domain.ports.outbound.reranker import Reranker
 from app.domain.ports.outbound.unit_of_work import UnitOfWork
-from app.domain.ports.outbound.vector_store import VectorStore
-
+from app.domain.services.citation_policy import (
+    extract_citations_from_chunks,
+    rank_citations,
+)
 from app.infrastructure.prompts.loader import SYSTEM_PROMPT_TEMPLATE
 
 logger = logging.getLogger(__name__)
@@ -19,13 +22,13 @@ logger = logging.getLogger(__name__)
 class ChatService:
     def __init__(
         self,
-        embedder: EmbeddingProvider,
-        vector_store: VectorStore,
+        hybrid_search: HybridSearchService,
+        reranker: Reranker,
         llm: LLMPort,
         uow_factory: type,
     ) -> None:
-        self._embedder = embedder
-        self._vector_store = vector_store
+        self._hybrid_search = hybrid_search
+        self._reranker = reranker
         self._llm = llm
         self._uow_factory = uow_factory
 
@@ -37,25 +40,21 @@ class ChatService:
         user_id: UUID,
         user_query: str,
     ) -> AsyncGenerator[str, None]:
-        query_vector = await self._embedder.embed_text(user_query)
-        context_matches = await self._vector_store.query_by_similarity(
-            query_vector=query_vector,
+        context_matches = await self._hybrid_search.search(
+            user_query=user_query,
             org_id=str(org_id),
             top_k=5,
         )
 
-        context_text = "\n".join(
-            m["metadata"]["text"] for m in context_matches if m.get("metadata")
+        context_chunks = await self._reranker.rerank(
+            query=user_query,
+            documents=context_matches,
+            top_k=5,
         )
-        citations = [
-            {
-                "doc_id": m["metadata"]["document_id"],
-                "title": m["metadata"].get("title", ""),
-                "pages": m["metadata"].get("pages", []),
-            }
-            for m in context_matches
-            if m.get("metadata")
-        ]
+
+        context_text = "\n".join(chunk.text for chunk in context_chunks)
+        citations = rank_citations(extract_citations_from_chunks(context_chunks))
+        citations_as_dicts = [c.__dict__ for c in citations]
 
         async with self._uow_factory() as uow:
             uow: UnitOfWork
@@ -91,7 +90,7 @@ class ChatService:
                 org_id=org_id,
                 user_id=user_id,
                 content=full_response,
-                citations=citations,
+                citations=citations_as_dicts,
                 model_id=None,
             )
             await uow.messages.add_message(ai_msg)
