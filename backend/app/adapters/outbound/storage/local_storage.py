@@ -1,22 +1,3 @@
-"""Local-disk implementation of :class:`ObjectStorage`.
-
-Stores files under ``base_dir / key`` where ``key`` is a relative path like
-``<org_id>/<document_id>-<filename>``. Suitable for dev, single-host setups,
-or as a fallback before S3/Supabase wiring.
-
-Design notes:
-  * Methods are synchronous (small files, OS-level IO). Async callers wrap
-    with ``asyncio.to_thread``.
-  * ``put_object`` uses *atomic* write (temp file + rename) so partial files
-    are never readable by the worker.
-  * ``key`` is sanitized to prevent path traversal outside ``base_dir``.
-  * File mode is forced to ``FILE_MODE`` (0644) and directory mode to
-    ``DIR_MODE`` (0755) so that an API container running as root can write
-    uploads and a Celery worker running as a non-root user (``appuser``) can
-    still read them. ``tempfile.mkstemp`` defaults to 0600 which silently
-    breaks the cross-process pipeline.
-"""
-
 from __future__ import annotations
 
 import os
@@ -83,7 +64,7 @@ class LocalObjectStorage(ObjectStorage):
 
 
 def _parents_below(start: Path, base: Path) -> list[Path]:
-    """Return ``[base, ..., start]`` if ``start`` is at/under ``base`` else ``[start]``."""
+    """Return ``[base, ..., start]`` if start is under base else ``[start]``."""
     try:
         rel = start.resolve().relative_to(base)
     except ValueError:
