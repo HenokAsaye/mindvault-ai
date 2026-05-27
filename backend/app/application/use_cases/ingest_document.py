@@ -1,26 +1,17 @@
-"""Accept an uploaded document and queue it for chunking.
-
-This service is the boundary between the HTTP layer and the rest of the
-ingestion pipeline:
-    1. Validate basics (type, size).
-    2. Compute a content checksum for de-dup / integrity.
-    3. Persist the bytes via :class:`ObjectStorage`.
-    4. Insert a ``Document`` row with status PENDING.
-    5. Enqueue the Celery task that does the heavy lifting (loading + chunking).
-
-The actual chunking happens asynchronously in a worker so the HTTP request
-returns quickly with a ``document_id`` clients can poll.
-"""
-
 from __future__ import annotations
 
 import asyncio
 import hashlib
 import logging
 import re
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from app.domain.entities.document import Document, DocumentStatus
+from app.domain.exceptions import (
+    DocumentEmptyError,
+    DocumentTooLargeError,
+    UnsupportedSourceTypeError,
+)
 from app.domain.ports.inbound.ingestion_use_case import (
     IngestDocumentCommand,
     IngestDocumentUseCase,
@@ -57,23 +48,37 @@ class IngestDocumentService(IngestDocumentUseCase):
 
     async def execute(self, command: IngestDocumentCommand) -> Document:
         if not command.data:
-            raise ValueError("Uploaded file is empty")
+            raise DocumentEmptyError("Uploaded file is empty")
         if len(command.data) > self._max_size_bytes:
-            raise ValueError(
+            raise DocumentTooLargeError(
                 f"Uploaded file exceeds max size of {self._max_size_bytes} bytes"
             )
         normalized_type = (command.source_type or "").lower()
         if normalized_type not in self._allowed_source_types:
-            raise ValueError(
+            raise UnsupportedSourceTypeError(
                 f"Unsupported source_type={command.source_type!r}. "
                 f"Allowed: {sorted(self._allowed_source_types)}"
             )
 
-        document_id = uuid4()
+        new_document_id = uuid4()
         checksum = hashlib.sha256(command.data).hexdigest()
-        storage_key = f"{command.org_id}/{document_id}-{_safe_filename(command.title)}"
+        storage_key = (
+            f"{command.org_id}/{new_document_id}-{_safe_filename(command.title)}"
+        )
 
-        # Storage IO is sync (local FS today) — offload to thread to keep loop free.
+        existing = await self._documents.find_by_checksum(
+            org_id=command.org_id,
+            checksum=checksum,
+        )
+        if existing is not None:
+            logger.info(
+                "Duplicate document upload detected for org_id=%s with checksum %s. "
+                "Existing document_id=%s will be reused.",
+                command.org_id,
+                checksum,
+                existing.id,
+            )
+            return existing
         await asyncio.to_thread(
             self._storage.put_object,
             key=storage_key,
@@ -82,7 +87,7 @@ class IngestDocumentService(IngestDocumentUseCase):
         )
 
         document = Document(
-            id=document_id,
+            id=new_document_id,
             org_id=command.org_id,
             title=command.title.strip() or _safe_filename("document"),
             source_type=normalized_type,
@@ -101,18 +106,15 @@ class IngestDocumentService(IngestDocumentUseCase):
         )
         await self._documents.save(document)
 
-        # Enqueue background processing. We do this **after** commit so a worker
-        # picking the task immediately won't race the row insert.
         try:
-            self._enqueue_processing(document_id=str(document_id))
+            self._enqueue_processing(document_id=str(new_document_id))
         except Exception:
-            # Don't lose the document if the broker is briefly unavailable —
-            # mark it failed so an operator can retry.
+
             logger.exception(
-                "Failed to enqueue processing for document %s", document_id
+                "Failed to enqueue processing for document %s", new_document_id
             )
             await self._documents.update_status(
-                document_id=document_id,
+                document_id=new_document_id,
                 status=DocumentStatus.FAILED.value,
                 error_message="Failed to enqueue processing job",
             )

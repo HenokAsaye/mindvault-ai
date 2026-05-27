@@ -8,7 +8,7 @@ from app.domain.ports.outbound.storage_port import StoragePort
 class S3Storage(StoragePort):
     def __init__(self, *, bucket_name: str, access_key: str, secret_key: str) -> None:
         self._bucket_name = bucket_name
-        self._s3_client = boto3.clinet(
+        self._s3_client = boto3.client(
             "s3",
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,

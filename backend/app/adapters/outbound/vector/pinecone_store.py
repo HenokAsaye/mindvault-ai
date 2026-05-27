@@ -32,7 +32,7 @@ class PineconeVectorStore(VectorStore):
                 self._index.upsert, vectors=vectors, namespace=namespace
             )
             logger.debug("Upserted %d vectors to Pinecone", len(vectors))
-        except Exception as exc:
+        except Exception:
             logger.exception("Failed to upsert vectors to Pinecone")
             raise
 
@@ -72,18 +72,23 @@ class PineconeVectorStore(VectorStore):
                 "Query returned %d matches for org_id=%s", len(results), org_id
             )
             return results
-        except Exception as exc:
+        except Exception:
             logger.exception("Failed to query vector store")
             raise
 
-    async def delete_by_doc_id(self, *, doc_id: UUID | str, org_id: UUID | str) -> None:
+    async def delete_by_document_id(
+        self, *, document_id: UUID | str, org_id: UUID | str
+    ) -> None:
         try:
             response = await asyncio.to_thread(
                 self._index.query,
                 vector=[0.0] * 1536,
                 top_k=10000,
                 namespace=None,
-                filter={"org_id": {"$eq": str(org_id)}, "doc_id": {"$eq": str(doc_id)}},
+                filter={
+                    "org_id": {"$eq": str(org_id)},
+                    "document_id": {"$eq": str(document_id)},
+                },
                 include_metadata=True,
             )
 
@@ -94,17 +99,17 @@ class PineconeVectorStore(VectorStore):
                     self._index.delete, ids=ids_to_delete, namespace=None
                 )
                 logger.info(
-                    "Deleted %d vectors for doc_id=%s, org_id=%s",
+                    "Deleted %d vectors for document_id=%s, org_id=%s",
                     len(ids_to_delete),
-                    doc_id,
+                    document_id,
                     org_id,
                 )
             else:
                 logger.debug(
-                    "No vectors found to delete for doc_id=%s, org_id=%s",
-                    doc_id,
+                    "No vectors found to delete for document_id=%s, org_id=%s",
+                    document_id,
                     org_id,
                 )
-        except Exception as exc:
-            logger.exception("Failed to delete vectors for doc_id=%s", doc_id)
+        except Exception:
+            logger.exception("Failed to delete vectors for document_id=%s", document_id)
             raise

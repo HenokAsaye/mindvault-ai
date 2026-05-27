@@ -49,3 +49,32 @@ class MembersListResponse(BaseModel):
     total: int
     page: int
     page_size: int
+
+
+class OrganizationsListResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    items: list[dict]
+    total: int
+    page: int
+    page_size: int
+
+
+class SearchChunkResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    id: str
+    text: str
+    score: float
+    source: str
+    metadata: dict
+    vector_score: float | None = None
+    key_score: float | None = None
+    rerank_score: float | None = None
+    retrieval_sources: list[str]
+    citation: dict
+
+
+class SearchResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    items: list[SearchChunkResponse]
+    citations: list[dict]
+    total: int

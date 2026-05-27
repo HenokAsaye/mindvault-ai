@@ -58,5 +58,6 @@ class PDFDocumentLoader(DocumentLoader):
                 text = ""
             if text:
                 pages.append(text)
-        # Form-feed (\f) is the conventional page separator; chunker treats it as whitespace.
+        # Form-feed (\f) is the conventional page separator; chunker treats it
+        # as whitespace.
         return "\n\f\n".join(pages)

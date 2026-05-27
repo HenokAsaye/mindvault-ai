@@ -57,6 +57,9 @@ class OrganizationORM(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+    members: Mapped[list["OrganizationMembershipORM"]] = relationship(
+        "OrganizationMembershipORM", back_populates="org"
+    )
 
 
 class OrganizationInvitationORM(Base):
@@ -100,6 +103,10 @@ class OrganizationMembershipORM(Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
+    )
+    user: Mapped["UserORM"] = relationship("UserORM", lazy="joined")
+    org: Mapped["OrganizationORM"] = relationship(
+        "OrganizationORM", back_populates="members"
     )
     role: Mapped[str] = mapped_column(String(32), nullable=False, default="member")
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")

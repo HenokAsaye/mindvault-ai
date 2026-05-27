@@ -1,12 +1,6 @@
-"""Worker-side use case: load a stored document and persist its chunks.
-
-This runs in a Celery prefork worker, so it is **synchronous** end to end and
-uses sync repositories backed by psycopg2 (see ``celery_worker_db.py``). That
-sidesteps asyncpg event-loop pitfalls and matches Celery's threading model.
-"""
-
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import logging
 from uuid import UUID, uuid4
@@ -17,7 +11,9 @@ from app.domain.ports.inbound.ingestion_use_case import ProcessDocumentChunksUse
 from app.domain.ports.outbound.chunk_repository import SyncChunkRepository
 from app.domain.ports.outbound.document_loader import DocumentLoaderRegistry
 from app.domain.ports.outbound.document_repository import SyncDocumentRepository
+from app.domain.ports.outbound.embedding_provider import SyncEmbeddingProvider
 from app.domain.ports.outbound.object_storage import ObjectStorage
+from app.domain.ports.outbound.vector_store import VectorStore
 from app.domain.services.chunking_policy import (
     ChunkingConfig,
     chunk_text,
@@ -36,12 +32,16 @@ class ProcessDocumentChunksService(ProcessDocumentChunksUseCase):
         object_storage: ObjectStorage,
         loader_registry: DocumentLoaderRegistry,
         chunking_config: ChunkingConfig,
+        embedding_provider: SyncEmbeddingProvider,
+        vector_store: VectorStore,
     ) -> None:
         self._documents = document_repository
         self._chunks = chunk_repository
         self._storage = object_storage
         self._loaders = loader_registry
         self._chunking = chunking_config
+        self._embedder = embedding_provider
+        self._vector_store = vector_store
 
     def execute(self, *, document_id: UUID) -> int:
         document = self._documents.get_by_id(document_id=document_id)
@@ -92,6 +92,30 @@ class ProcessDocumentChunksService(ProcessDocumentChunksUseCase):
             ]
             self._chunks.add_many(chunks)
 
+            chunk_texts = [c.content for c in chunks]
+            embeddings = self._embedder.embed_texts(chunk_texts)
+
+            vectors = [
+                {
+                    "id": f"doc_{document.id}_{c.chunk_index}",
+                    "values": emb,
+                    "metadata": {
+                        "document_id": str(document.id),
+                        "chunk_index": c.chunk_index,
+                        "text": c.content,
+                        "org_id": str(document.org_id),
+                    },
+                }
+                for c, emb in zip(chunks, embeddings)
+            ]
+
+            asyncio.run(
+                self._vector_store.upsert(
+                    vectors=vectors,
+                    namespace=str(document.org_id),
+                )
+            )
+
             token_count = sum(estimate_token_count(p) for p in pieces)
             self._documents.update_status(
                 document_id=document_id,
@@ -107,7 +131,7 @@ class ProcessDocumentChunksService(ProcessDocumentChunksUseCase):
                 token_count,
             )
             return len(chunks)
-        except Exception as exc:  # noqa: BLE001 — surface every failure on the row
+        except Exception as exc:
             logger.exception("Failed to process document %s", document_id)
             self._documents.update_status(
                 document_id=document_id,

@@ -22,7 +22,12 @@ from app.application.dto.document_schemas import (
     DocumentListResponse,
     DocumentResponse,
 )
-from app.domain.entities.document import Document, DocumentStatus
+from app.domain.entities.document import Document
+from app.domain.exceptions import (
+    DocumentEmptyError,
+    DocumentTooLargeError,
+    UnsupportedSourceTypeError,
+)
 from app.domain.ports.inbound.ingestion_use_case import IngestDocumentCommand
 from app.domain.services.chunking_policy import estimate_token_count
 from app.infrastructure.config import settings
@@ -57,39 +62,58 @@ def _to_response(document: Document) -> DocumentResponse:
 
 _DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
+_CONTENT_TYPE_MAP = {
+    "application/pdf": "pdf",
+    _DOCX_MIME: "docx",
+    "text/markdown": "markdown",
+    "text/x-markdown": "markdown",
+}
+_EXTENSION_MAP = {
+    ".pdf": "pdf",
+    ".docx": "docx",
+    ".md": "markdown",
+    ".markdown": "markdown",
+    ".txt": "text",
+    ".text": "text",
+    ".log": "text",
+}
+
+
+def _infer_from_content_type(content_type: str | None) -> str | None:
+    if not content_type:
+        return None
+    ct = content_type.lower()
+    mapped = _CONTENT_TYPE_MAP.get(ct)
+    if mapped:
+        return mapped
+    if ct.startswith("text/"):
+        return "text"
+    return None
+
+
+def _infer_from_filename(filename: str | None) -> str | None:
+    if not filename:
+        return None
+    guessed, _ = mimetypes.guess_type(filename)
+    if guessed:
+        mapped = _CONTENT_TYPE_MAP.get(guessed)
+        if mapped:
+            return mapped
+        if guessed.startswith("text/"):
+            return "text"
+    lower = filename.lower()
+    for ext, source in _EXTENSION_MAP.items():
+        if lower.endswith(ext):
+            return source
+    return None
+
 
 def _infer_source_type(filename: str | None, content_type: str | None) -> str:
-    if content_type:
-        ct = content_type.lower()
-        if ct == "application/pdf":
-            return "pdf"
-        if ct == _DOCX_MIME:
-            return "docx"
-        if ct in {"text/markdown", "text/x-markdown"}:
-            return "markdown"
-        if ct.startswith("text/"):
-            return "text"
-    if filename:
-        guessed, _ = mimetypes.guess_type(filename)
-        if guessed:
-            if guessed == "application/pdf":
-                return "pdf"
-            if guessed == _DOCX_MIME:
-                return "docx"
-            if guessed in {"text/markdown", "text/x-markdown"}:
-                return "markdown"
-            if guessed.startswith("text/"):
-                return "text"
-        lower = filename.lower()
-        if lower.endswith(".pdf"):
-            return "pdf"
-        if lower.endswith(".docx"):
-            return "docx"
-        if lower.endswith((".md", ".markdown")):
-            return "markdown"
-        if lower.endswith((".txt", ".text", ".log")):
-            return "text"
-    return "text"
+    return (
+        _infer_from_content_type(content_type)
+        or _infer_from_filename(filename)
+        or "text"
+    )
 
 
 @router.post(
@@ -117,10 +141,6 @@ async def upload_document(
         )
 
     raw = await file.read()
-    if not raw:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Uploaded file is empty"
-        )
 
     inferred_type = (
         source_type or _infer_source_type(file.filename, file.content_type)
@@ -139,9 +159,17 @@ async def upload_document(
     service = get_ingest_document_service()
     try:
         document = await service.execute(command)
-    except ValueError as exc:
+    except DocumentEmptyError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
+    except DocumentTooLargeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=str(exc)
+        ) from exc
+    except UnsupportedSourceTypeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail=str(exc)
         ) from exc
 
     return _to_response(document)
@@ -262,7 +290,6 @@ async def delete_document(
     try:
         await asyncio.to_thread(storage.delete_object, key=doc.storage_url)
     except Exception:
-        # File missing or transient FS error; we already removed the row.
         logger.exception("Failed to delete stored bytes for document %s", document_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
@@ -275,7 +302,10 @@ async def delete_document(
 async def get_document_status(
     document_id: UUID, claims: dict = Depends(get_current_claims)
 ):
-    """Get the current processing status of a document (pending/processing/ready/failed)."""
+    """Get the current processing status of a document.
+
+    Returns pending/processing/ready/failed.
+    """
     org_id_str = claims.get("org_id")
     if not org_id_str:
         raise HTTPException(
@@ -290,6 +320,4 @@ async def get_document_status(
     return _to_response(doc)
 
 
-# Settings reference kept so static analyzers see the import is intentional and
-# the route file participates in any future config-validation hooks.
 _ = settings

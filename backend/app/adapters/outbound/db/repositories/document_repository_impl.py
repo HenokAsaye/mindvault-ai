@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import delete, func, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.adapters.outbound.db.celery_worker_db import worker_session
 from app.adapters.outbound.db.sqlalchemy_models import DocumentChunkORM, DocumentORM
@@ -45,7 +44,7 @@ class DocumentRepositoryImpl(DocumentRepository):
         self._session_factory = session_factory
 
     async def save(self, document: Document) -> None:
-        async with self._session_factory() as session:  # type: AsyncSession
+        async with self._session_factory() as session:
             session.add(
                 DocumentORM(
                     id=document.id,
@@ -116,6 +115,38 @@ class DocumentRepositoryImpl(DocumentRepository):
                 count_stmt = count_stmt.where(DocumentORM.status == status)
             total = (await session.execute(count_stmt)).scalar_one()
         return [_document_orm_to_entity(r) for r in rows], int(total)
+
+    async def find_by_checksum(self, *, org_id: UUID, checksum: str) -> Document | None:
+        async with self._session_factory() as session:
+            stmt = select(DocumentORM).where(
+                DocumentORM.org_id == org_id,
+                DocumentORM.checksum == checksum,
+            )
+            row = (await session.execute(stmt)).scalar_one_or_none()
+            return _document_orm_to_entity(row) if row else None
+
+    async def count_by_org(self, org_id: str) -> int:
+        async with self._session_factory() as session:
+            stmt = (
+                select(func.count())
+                .select_from(DocumentORM)
+                .where(DocumentORM.org_id == org_id)
+            )
+            result = await session.execute(stmt)
+            return result.scalar_one()
+
+    async def count_failed_by_org(self, org_id: str) -> int:
+        async with self._session_factory() as session:
+            stmt = (
+                select(func.count())
+                .select_from(DocumentORM)
+                .where(
+                    DocumentORM.org_id == org_id,
+                    DocumentORM.status == DocumentStatus.FAILED.value,
+                )
+            )
+            result = await session.execute(stmt)
+            return result.scalar_one()
 
     async def update_status(
         self,
@@ -281,6 +312,16 @@ class ChunkRepositoryImpl(ChunkRepository):
             )
             for r in rows
         ]
+
+    async def count_by_org(self, org_id: str) -> int:
+        async with self._session_factory() as session:
+            stmt = (
+                select(func.count())
+                .select_from(DocumentChunkORM)
+                .where(DocumentChunkORM.org_id == org_id)
+            )
+            result = await session.execute(stmt)
+            return result.scalar_one()
 
     async def delete_by_document(self, *, document_id: UUID) -> None:
         async with self._session_factory() as session:

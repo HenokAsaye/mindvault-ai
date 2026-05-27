@@ -15,6 +15,9 @@ class ChunkRepository(ABC):
     @abstractmethod
     async def delete_by_document(self, *, document_id: UUID) -> None: ...
 
+    @abstractmethod
+    async def count_by_org(self, org_id: str) -> int: ...
+
 
 class SyncChunkRepository(ABC):
     @abstractmethod

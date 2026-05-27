@@ -27,9 +27,9 @@ class Settings:
     login_soft_lock_seconds: int = int(os.getenv("LOGIN_SOFT_LOCK_SECONDS", "900"))
     login_hard_lock_seconds: int = int(os.getenv("LOGIN_HARD_LOCK_SECONDS", "86400"))
     invitation_signing_secret: str = os.getenv("INVITATION_SIGNING_SECRET", "").strip()
-    # SMTP_* read at access time (see properties below) so Celery workers always see
-    # the current process env — not a snapshot from the first import (fixes empty SMTP
-    # when the worker process differs from the API or env is applied after early imports).
+    # SMTP_* read at access time (see properties below) so workers always see the
+    # current process env — not a snapshot from the first import (fixes empty SMTP
+    # when the worker differs from the API or env is applied after early imports).
     frontend_base_url: str = os.getenv(
         "FRONTEND_BASE_URL", "http://localhost:5173"
     ).rstrip("/")
@@ -38,7 +38,8 @@ class Settings:
         "CELERY_RESULT_BACKEND", "redis://localhost:6379/2"
     )
     celery_task_default_queue: str = os.getenv("CELERY_TASK_DEFAULT_QUEUE", "default")
-    # When set (and different from celery_task_default_queue), invitation emails route here; worker uses -Q default,email
+    # When set (and different from celery_task_default_queue), invitation emails
+    # route here; worker uses -Q default,email
     celery_email_queue: str = os.getenv("CELERY_EMAIL_QUEUE", "default")
     celery_timezone: str = os.getenv("CELERY_TIMEZONE", "UTC")
 
@@ -64,7 +65,8 @@ class Settings:
                 "pdf",
                 "application/pdf",
                 "docx",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/vnd.openxmlformats-officedocument"
+                ".wordprocessingml.document",
             ]
         ),
     )
@@ -76,6 +78,9 @@ class Settings:
     # LLM (OpenAI)
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+    # Reranker (Cohere)
+    cohere_api_key: str = os.getenv("COHERE_API_KEY", "")
 
     @property
     def document_allowed_source_types(self) -> set[str]:
@@ -144,7 +149,7 @@ class Settings:
 
     @property
     def smtp_password_for_auth(self) -> str:
-        """Gmail app passwords are 16 characters, often written with spaces; SMTP auth uses them without spaces."""
+        """Gmail app passwords are 16 chars; SMTP auth strips spaces."""
         return "".join((self.smtp_password or "").split())
 
     @property

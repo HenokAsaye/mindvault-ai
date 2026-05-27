@@ -1,21 +1,9 @@
-"""Celery application instance and worker entrypoint (-A app.infrastructure.celery_app).
-
-Configuration comes from ``Settings`` (env / .env): broker URL, result backend,
-queues, serializers. Task modules register **after** the app is constructed to
-avoid import cycles (see trailing import).
-
-Run a worker::
-    celery -A app.infrastructure.celery_app worker --loglevel=info
-
-Consume both default and email queues when you split traffic::
-    celery -A app.infrastructure.celery_app worker --loglevel=info -Q default,email
-"""
-
 from __future__ import annotations
 
 from celery import Celery
 
 from app.infrastructure.config import settings
+from app.application.tasks import audit_tasks, document_tasks, email_tasks  # noqa: F401
 
 celery_app = Celery(
     "mindvault",
@@ -36,7 +24,6 @@ celery_app.conf.update(
     broker_connection_retry_on_startup=True,
 )
 
-# Optional: route email jobs to a dedicated queue (worker must listen with -Q ...).
 if (
     settings.celery_email_queue
     and settings.celery_email_queue != settings.celery_task_default_queue
@@ -46,11 +33,5 @@ if (
             "queue": settings.celery_email_queue
         },
     }
-
-# Register task modules (``@shared_task`` binds them to this app when imported).
-import app.application.tasks.audit_tasks  # noqa: E402
-import app.application.tasks.document_tasks  # noqa: E402
-import app.application.tasks.ingestion_tasks  # noqa: E402
-import app.application.tasks.email_tasks  # noqa: E402
 
 __all__ = ["celery_app"]

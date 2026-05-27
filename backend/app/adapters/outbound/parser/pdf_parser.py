@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import io
 import logging
 from typing import BinaryIO
+
 import fitz
 
 logger = logging.getLogger(__name__)
@@ -26,7 +28,7 @@ class PDFParser:
                 text = page.get_text() or ""
                 if text:
                     pages.append(text)
-            except Exception as exc:
+            except Exception:
                 logger.exception("Failed to extract text from PDF page %d", page_num)
                 continue
 

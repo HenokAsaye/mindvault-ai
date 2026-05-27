@@ -19,6 +19,7 @@ from app.application.dto.responses import (
     MFAPartialResponse,
     MeResponse,
     MembersListResponse,
+    OrganizationsListResponse,
     RegisterResponse,
     SwitchOrgResponse,
     TokenPairResponse,
@@ -132,6 +133,19 @@ async def me(claims: dict = Depends(get_current_claims)) -> MeResponse:
         org_id=str(claims.get("org_id")),
         role=str(claims.get("role", "member")),
     )
+
+
+@router.get("/me/orgs", response_model=OrganizationsListResponse)
+async def list_my_organizations_me(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    claims: dict = Depends(get_current_claims),
+    iam_service=Depends(Container.get_iam_service),
+) -> OrganizationsListResponse:
+    result = await iam_service.list_my_organizations(
+        actor_claims=claims, page=page, page_size=page_size
+    )
+    return OrganizationsListResponse(**result)
 
 
 @router.post("/refresh", response_model=TokenPairResponse)
@@ -267,6 +281,19 @@ async def list_members(
             status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)
         ) from exc
     return MembersListResponse(**result)
+
+
+@router.get("/orgs", response_model=OrganizationsListResponse)
+async def list_my_organizations(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    claims: dict = Depends(get_current_claims),
+    iam_service=Depends(Container.get_iam_service),
+) -> OrganizationsListResponse:
+    result = await iam_service.list_my_organizations(
+        actor_claims=claims, page=page, page_size=page_size
+    )
+    return OrganizationsListResponse(**result)
 
 
 @router.patch("/orgs/{org_id}/members/{user_id}")

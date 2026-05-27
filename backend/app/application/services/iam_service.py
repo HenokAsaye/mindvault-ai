@@ -5,6 +5,7 @@ from urllib.parse import quote
 from uuid import UUID, uuid4
 
 from sqlalchemy import delete, func, select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.adapters.outbound.db.sqlalchemy_models import (
@@ -337,7 +338,8 @@ class IAMService:
                 raise ValueError("User not found")
             if user.email.strip().lower() != inv.email:
                 raise ValueError(
-                    "Invitation was sent to a different email address; sign in with that email"
+                    "Invitation was sent to a different email address; "
+                    "sign in with that email"
                 )
 
             existing = (
@@ -408,7 +410,8 @@ class IAMService:
             ).scalar_one_or_none()
             if existing_user:
                 raise ValueError(
-                    "An account already exists for this email; sign in and accept the invitation"
+                    "An account already exists for this email; sign in and accept "
+                    "the invitation"
                 )
 
             new_user_id = uuid4()
@@ -426,7 +429,7 @@ class IAMService:
                     metadata_json={},
                 )
             )
-            # Ensure the user row exists before membership insert to satisfy FK constraints.
+            # Flush user row so membership FK is satisfied.
             await session.flush()
             session.add(
                 OrganizationMembershipORM(
@@ -445,7 +448,8 @@ class IAMService:
             except IntegrityError as exc:
                 await session.rollback()
                 raise ValueError(
-                    "Failed to complete invitation registration due to data integrity constraints"
+                    "Failed to complete invitation registration due to data "
+                    "integrity constraints"
                 ) from exc
             return {"user_id": str(new_user_id), "default_org_id": str(inv.org_id)}
 
@@ -460,6 +464,7 @@ class IAMService:
                 (
                     await session.execute(
                         select(OrganizationMembershipORM)
+                        .options(selectinload(OrganizationMembershipORM.user))
                         .where(OrganizationMembershipORM.org_id == org_id)
                         .order_by(OrganizationMembershipORM.created_at.desc())
                         .offset(offset)
@@ -478,6 +483,8 @@ class IAMService:
             ).scalar_one()
         items = [
             {
+                "full_name": str(r.user.full_name) if r.user else None,
+                "email": str(r.user.email) if r.user else None,
                 "user_id": str(r.user_id),
                 "org_id": str(r.org_id),
                 "role": r.role.upper(),
@@ -539,3 +546,53 @@ class IAMService:
                 )
             )
             await session.commit()
+
+    async def list_my_organizations(
+        self, *, actor_claims: dict, page: int, page_size: int
+    ) -> dict:
+        user_id = actor_claims["sub"]
+        offset = max(0, (page - 1) * page_size)
+        async with self._session_factory() as session:
+            rows = (
+                await session.execute(
+                    select(OrganizationORM, OrganizationMembershipORM.role)
+                    .join(
+                        OrganizationMembershipORM,
+                        OrganizationMembershipORM.org_id == OrganizationORM.id,
+                    )
+                    .where(
+                        OrganizationMembershipORM.user_id == user_id,
+                        OrganizationMembershipORM.status
+                        == MembershipStatus.ACTIVE.value,
+                    )
+                    .order_by(OrganizationORM.created_at.desc())
+                    .offset(offset)
+                    .limit(page_size)
+                )
+            ).all()
+            total = (
+                await session.execute(
+                    select(func.count())
+                    .select_from(OrganizationMembershipORM)
+                    .where(
+                        OrganizationMembershipORM.user_id == user_id,
+                        OrganizationMembershipORM.status
+                        == MembershipStatus.ACTIVE.value,
+                    )
+                )
+            ).scalar_one()
+        items = [
+            {
+                "id": str(r.id),
+                "name": str(r.name),
+                "slug": str(r.slug),
+                "role": role.upper(),
+            }
+            for r, role in rows
+        ]
+        return {
+            "items": items,
+            "total": int(total),
+            "page": page,
+            "page_size": page_size,
+        }

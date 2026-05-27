@@ -1,0 +1,1 @@
+"""Keyword/lexical retrieval adapter."""

@@ -63,3 +63,9 @@ class PatchMemberRequest(BaseModel):
 class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     message: StrictStr = Field(..., min_length=1, max_length=10000)
+
+
+class SearchRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    query: StrictStr = Field(..., min_length=1, max_length=10000)
+    top_k: StrictInt = Field(default=5, ge=1, le=50)
