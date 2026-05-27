@@ -10,8 +10,7 @@ class FTSAdapter(FullTextSearch):
     async def search(
         self, *, query: str, org_id: str, top_k: int = 5
     ) -> list[Document]:
-        ts_query = sa_text(
-            """
+        ts_query = sa_text("""
             SELECT
                 dc.id,
                 dc.content AS text,
@@ -27,8 +26,7 @@ class FTSAdapter(FullTextSearch):
             ORDER BY
                 score DESC
             LIMIT :top_k;
-            """
-        )
+            """)
 
         async with self._session_factory() as session:
             result = await session.execute(

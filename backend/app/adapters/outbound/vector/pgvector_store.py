@@ -20,9 +20,7 @@ class PGVectorStore(VectorStore):
     async def _ensure_table_exists(self) -> None:
         async with self._engine.begin() as conn:
             await conn.execute(sa.text("CREATE EXTENSION IF NOT EXISTS vector"))
-            await conn.execute(
-                sa.text(
-                    """
+            await conn.execute(sa.text("""
                     CREATE TABLE IF NOT EXISTS vectors (
                         id TEXT PRIMARY KEY,
                         org_id TEXT NOT NULL,
@@ -32,9 +30,7 @@ class PGVectorStore(VectorStore):
                         metadata JSONB,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
-                    """
-                )
-            )
+                    """))
             logger.debug("Ensured vectors table exists")
 
     async def upsert(
@@ -63,8 +59,7 @@ class PGVectorStore(VectorStore):
 
                 embedding_str = f"[{','.join(str(v) for v in values)}]"
 
-                stmt = sa.text(
-                    """
+                stmt = sa.text("""
                     INSERT INTO vectors
                         (id, org_id, document_id, namespace, embedding, metadata)
                     VALUES
@@ -72,8 +67,7 @@ class PGVectorStore(VectorStore):
                     ON CONFLICT (id) DO UPDATE SET
                         embedding = EXCLUDED.embedding,
                         metadata = EXCLUDED.metadata
-                    """
-                )
+                    """)
 
                 await conn.execute(
                     stmt,
@@ -110,9 +104,7 @@ class PGVectorStore(VectorStore):
             if namespace:
                 where_clause += " AND namespace = :namespace"
 
-            stmt = sa.text(
-                (
-                    """
+            stmt = sa.text(("""
                     SELECT
                         id,
                         1 - (embedding <=> :embedding::vector) AS score,
@@ -121,9 +113,7 @@ class PGVectorStore(VectorStore):
                     {where_clause}
                     ORDER BY embedding <=> :embedding::vector
                     LIMIT :top_k
-                    """
-                ).format(where_clause=where_clause)
-            )
+                    """).format(where_clause=where_clause))
 
             params = {
                 "embedding": query_embedding,
@@ -183,9 +173,7 @@ class SyncPGVectorStore:
     def _ensure_table_exists(self) -> None:
         with self._engine.begin() as conn:
             conn.execute(sa.text("CREATE EXTENSION IF NOT EXISTS vector"))
-            conn.execute(
-                sa.text(
-                    """
+            conn.execute(sa.text("""
                     CREATE TABLE IF NOT EXISTS vectors (
                         id TEXT PRIMARY KEY,
                         org_id TEXT NOT NULL,
@@ -195,9 +183,7 @@ class SyncPGVectorStore:
                         metadata JSONB,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
-                    """
-                )
-            )
+                    """))
 
     def upsert(
         self, *, vectors: list[dict[str, Any]], namespace: str | None = None
@@ -223,8 +209,7 @@ class SyncPGVectorStore:
 
                 embedding_str = f"[{','.join(str(v) for v in values)}]"
 
-                stmt = sa.text(
-                    """
+                stmt = sa.text("""
                     INSERT INTO vectors
                         (id, org_id, document_id, namespace, embedding, metadata)
                     VALUES
@@ -232,8 +217,7 @@ class SyncPGVectorStore:
                     ON CONFLICT (id) DO UPDATE SET
                         embedding = EXCLUDED.embedding,
                         metadata = EXCLUDED.metadata
-                    """
-                )
+                    """)
 
                 conn.execute(
                     stmt,
@@ -255,12 +239,10 @@ class SyncPGVectorStore:
         self._ensure_table_exists()
 
         with self._engine.begin() as conn:
-            stmt = sa.text(
-                """
+            stmt = sa.text("""
                 DELETE FROM vectors
                 WHERE document_id = :document_id AND org_id = :org_id
-                """
-            )
+                """)
 
             result = conn.execute(
                 stmt, {"document_id": str(document_id), "org_id": str(org_id)}

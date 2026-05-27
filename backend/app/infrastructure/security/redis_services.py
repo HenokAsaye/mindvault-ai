@@ -203,7 +203,12 @@ class InvitationService:
         normalized_email = email.strip().lower()
         normalized_role = role.strip().lower()
         parts = [
-            self._issuer, invite_id, org_id, normalized_email, normalized_role, str(exp)
+            self._issuer,
+            invite_id,
+            org_id,
+            normalized_email,
+            normalized_role,
+            str(exp),
         ]
         blob = "|".join(parts)
         sig = hmac.new(self._secret, blob.encode("utf-8"), hashlib.sha256).hexdigest()

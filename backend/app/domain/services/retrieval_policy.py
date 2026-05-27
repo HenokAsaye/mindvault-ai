@@ -7,7 +7,6 @@ from app.domain.value_objects.document import Document
 from app.domain.ports.retriever import Retriever
 from app.domain.services.result_fusion import fuse_results, apply_reciprocal_rank_fusion
 
-
 logger = logging.getLogger(__name__)
 
 

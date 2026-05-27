@@ -162,12 +162,12 @@ class SmtpEmailSender(EmailSender):
             )
         return (
             "<!DOCTYPE html>"
-            "<html><body style=\"font-family:system-ui,sans-serif;line-height:1.5;\">"
+            '<html><body style="font-family:system-ui,sans-serif;line-height:1.5;">'
             f"<p>You've been invited to join <strong>{safe_org}</strong> on MindVault "
             f"as <strong>{safe_role}</strong>.</p>"
             f"{exp_block}"
             f'<p><a href="{safe_url}">Accept invitation</a></p>'
-            f"<p style=\"font-size:0.9em;color:#555;\">If the button does not work, "
+            f'<p style="font-size:0.9em;color:#555;">If the button does not work, '
             f"copy this link:<br>{safe_url}</p>"
             "</body></html>"
         )
