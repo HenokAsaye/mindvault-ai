@@ -18,7 +18,7 @@ class Container:
     get_process_document_chunks_service = staticmethod(
         providers.get_process_document_chunks_service
     )
-    get_ingestion_service = staticmethod(providers.get_ingestion_service)
     get_embedder = staticmethod(providers.get_embedder)
     get_vector_store = staticmethod(providers.get_vector_store)
     get_chat_service = staticmethod(providers.get_chat_service)
+    get_semantic_search_service = staticmethod(providers.get_semantic_search_service)
