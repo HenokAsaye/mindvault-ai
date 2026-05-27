@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from app.infrastructure import celery_app  # noqa: F401
-
 from fastapi import FastAPI
 
 from app.adapters.inbound.api.v1 import (
@@ -10,6 +8,7 @@ from app.adapters.inbound.api.v1 import (
     routes_documents,
     routes_search,
 )
+from app.infrastructure import celery_app  # noqa: F401
 
 app = FastAPI(
     title="MindVault AI Backend",
