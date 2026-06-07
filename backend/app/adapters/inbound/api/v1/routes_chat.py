@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/chats", tags=["chats"])
 
-
 @router.post("/{session_id}/ask")
 async def chat(
     session_id: UUID,

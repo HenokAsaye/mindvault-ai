@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/search", tags=["search"])
 
-
 @router.post("", response_model=SearchResponse)
 async def search(
     payload: SearchRequest,

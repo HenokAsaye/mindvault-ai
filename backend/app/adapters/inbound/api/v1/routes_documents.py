@@ -43,7 +43,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
-
 def _to_response(document: Document) -> DocumentResponse:
     return DocumentResponse(
         id=str(document.id),
@@ -58,7 +57,6 @@ def _to_response(document: Document) -> DocumentResponse:
         created_at=document.created_at,
         updated_at=document.updated_at,
     )
-
 
 _DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
@@ -78,7 +76,6 @@ _EXTENSION_MAP = {
     ".log": "text",
 }
 
-
 def _infer_from_content_type(content_type: str | None) -> str | None:
     if not content_type:
         return None
@@ -89,7 +86,6 @@ def _infer_from_content_type(content_type: str | None) -> str | None:
     if ct.startswith("text/"):
         return "text"
     return None
-
 
 def _infer_from_filename(filename: str | None) -> str | None:
     if not filename:
@@ -107,14 +103,12 @@ def _infer_from_filename(filename: str | None) -> str | None:
             return source
     return None
 
-
 def _infer_source_type(filename: str | None, content_type: str | None) -> str:
     return (
         _infer_from_content_type(content_type)
         or _infer_from_filename(filename)
         or "text"
     )
-
 
 @router.post(
     "",
@@ -174,7 +168,6 @@ async def upload_document(
 
     return _to_response(document)
 
-
 @router.get(
     "", response_model=DocumentListResponse, summary="List documents in active org"
 )
@@ -207,7 +200,6 @@ async def list_documents(
         page_size=page_size,
     )
 
-
 @router.get(
     "/{document_id}", response_model=DocumentResponse, summary="Fetch document by id"
 )
@@ -224,7 +216,6 @@ async def get_document(document_id: UUID, claims: dict = Depends(get_current_cla
             status_code=status.HTTP_404_NOT_FOUND, detail="Document not found"
         )
     return _to_response(doc)
-
 
 @router.get(
     "/{document_id}/chunks",
@@ -262,7 +253,6 @@ async def list_document_chunks(
         total=len(chunks),
     )
 
-
 @router.delete(
     "/{document_id}",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -293,7 +283,6 @@ async def delete_document(
         logger.exception("Failed to delete stored bytes for document %s", document_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-
 @router.get(
     "/{document_id}/status",
     response_model=DocumentResponse,
@@ -318,6 +307,5 @@ async def get_document_status(
             status_code=status.HTTP_404_NOT_FOUND, detail="Document not found"
         )
     return _to_response(doc)
-
 
 _ = settings
