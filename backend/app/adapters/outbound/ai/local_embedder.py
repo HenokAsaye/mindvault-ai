@@ -11,7 +11,6 @@ from app.domain.ports.outbound.embedding_provider import (
 
 logger = logging.getLogger(__name__)
 
-
 class SyncLocalBGEAdapter(SyncEmbeddingProvider):
     def __init__(self, model_name: str = "BAAI/bge-small-en-v1.5") -> None:
         logger.info("Loading embedding model: %s", model_name)
@@ -32,7 +31,6 @@ class SyncLocalBGEAdapter(SyncEmbeddingProvider):
             return []
         embeddings = self._model.encode(texts, normalize_embeddings=True)
         return embeddings.tolist()
-
 
 class AsyncLocalBGEAdapter(EmbeddingProvider):
     def __init__(
