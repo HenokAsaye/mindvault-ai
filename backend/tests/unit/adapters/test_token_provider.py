@@ -6,7 +6,6 @@ import pytest
 
 from app.adapters.outbound.db.repositories.token_provider_impl import JwtTokenProvider
 
-
 @pytest.mark.unit
 class TestJwtTokenProvider:
     @pytest.fixture

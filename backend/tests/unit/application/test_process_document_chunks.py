@@ -22,7 +22,6 @@ from tests.helpers.mocks import (
     make_document,
 )
 
-
 @pytest.mark.unit
 def test_process_document_chunks_full_pipeline() -> None:
     doc = make_document(status=DocumentStatus.PENDING, storage_key="k1")
@@ -47,7 +46,6 @@ def test_process_document_chunks_full_pipeline() -> None:
     assert len(chunk_repo.chunks) == count
     assert len(vector.upserted) == 1
 
-
 @pytest.mark.unit
 def test_process_skips_missing_document() -> None:
     service = ProcessDocumentChunksService(
@@ -60,7 +58,6 @@ def test_process_skips_missing_document() -> None:
         vector_store=FakeVectorStore(),
     )
     assert service.execute(document_id=uuid4()) == 0
-
 
 @pytest.mark.unit
 def test_process_skips_already_ready() -> None:

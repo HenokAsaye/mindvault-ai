@@ -13,7 +13,6 @@ from app.domain.ports.inbound.auth.registration_inbound_contracts import (
 )
 from tests.helpers.mocks import FakeUoW, uow_factory
 
-
 @pytest.fixture
 def password_hasher():
     from app.adapters.outbound.db.repositories.password_hasher_impl import (
@@ -21,7 +20,6 @@ def password_hasher():
     )
 
     return BcryptPasswordHasher()
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio
@@ -44,7 +42,6 @@ async def test_register_creates_user_org_and_membership(password_hasher) -> None
     assert len(uow.users.created) == 1
     assert len(uow.organizations.orgs) == 1
 
-
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_register_rejects_duplicate_email(password_hasher) -> None:
@@ -65,7 +62,6 @@ async def test_register_rejects_duplicate_email(password_hasher) -> None:
             )
         )
 
-
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_register_requires_organization_name(password_hasher) -> None:
@@ -82,7 +78,6 @@ async def test_register_requires_organization_name(password_hasher) -> None:
                 organization_name="",
             )
         )
-
 
 @pytest.mark.unit
 def test_slugify_org_name(password_hasher) -> None:

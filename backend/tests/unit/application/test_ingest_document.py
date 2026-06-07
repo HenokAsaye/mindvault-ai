@@ -16,7 +16,6 @@ from app.domain.exceptions import (
 from app.domain.ports.inbound.ingestion_use_case import IngestDocumentCommand
 from tests.helpers.mocks import FakeDocumentRepo, FakeMemoryStorage, make_document
 
-
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_ingest_stores_and_enqueues() -> None:
@@ -46,7 +45,6 @@ async def test_ingest_stores_and_enqueues() -> None:
     assert doc.id in repo.documents
     assert enqueued == [str(doc.id)]
     assert storage.get_object(key=doc.storage_url) == b"hello world"
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio
@@ -81,7 +79,6 @@ async def test_ingest_returns_existing_on_duplicate_checksum() -> None:
     )
     assert result.id == existing.id
 
-
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_ingest_rejects_empty_file() -> None:
@@ -103,7 +100,6 @@ async def test_ingest_rejects_empty_file() -> None:
                 data=b"",
             )
         )
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio
@@ -127,7 +123,6 @@ async def test_ingest_rejects_oversized_file() -> None:
             )
         )
 
-
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_ingest_rejects_unsupported_type() -> None:
@@ -149,7 +144,6 @@ async def test_ingest_rejects_unsupported_type() -> None:
                 data=b"data",
             )
         )
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio

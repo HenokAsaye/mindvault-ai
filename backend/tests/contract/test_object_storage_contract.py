@@ -6,7 +6,6 @@ import pytest
 
 from app.adapters.outbound.storage.local_storage import LocalObjectStorage
 
-
 @pytest.mark.contract
 class TestObjectStorageContract:
     """Behaviors required by all ObjectStorage implementations."""

@@ -6,7 +6,6 @@ import pytest
 
 from app.adapters.outbound.storage.local_storage import LocalObjectStorage
 
-
 @pytest.mark.unit
 class TestLocalObjectStorage:
     def test_put_and_get_roundtrip(self, storage_dir) -> None:

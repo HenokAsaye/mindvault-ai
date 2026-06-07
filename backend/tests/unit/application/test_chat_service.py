@@ -10,7 +10,6 @@ from app.application.services.chat_service import ChatService
 from app.domain.value_objects.document import Document
 from tests.helpers.mocks import FakeUoW
 
-
 class FakeHybridSearch:
     async def search(self, **kwargs) -> list[Document]:
         return [
@@ -23,17 +22,14 @@ class FakeHybridSearch:
             )
         ]
 
-
 class FakeReranker:
     async def rerank(self, **kwargs) -> list[Document]:
         return kwargs["documents"]
-
 
 class FakeLLM:
     async def generate_response_stream(self, *, messages, temperature=0.7):
         yield "Hello "
         yield "world"
-
 
 class FakeMessageRepo:
     async def get_recent_by_session(self, session_id, limit=6):
@@ -41,7 +37,6 @@ class FakeMessageRepo:
 
     async def add_message(self, message):
         self.last = message
-
 
 class FakeSessionRepo:
     async def get_chat_session(self, session_id):
@@ -53,13 +48,11 @@ class FakeSessionRepo:
     async def update_chat_session(self, session):
         pass
 
-
 class FakeSessionUoW(FakeUoW):
     def __init__(self) -> None:
         super().__init__()
         self.messages = FakeMessageRepo()
         self.sessions = FakeSessionRepo()
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio

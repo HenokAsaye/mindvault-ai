@@ -16,7 +16,6 @@ from tests.helpers.mocks import (
 
 ROUTES = "app.adapters.inbound.api.v1.routes_documents"
 
-
 @pytest.mark.integration
 def test_upload_document_accepted(authed_client, test_org_id, monkeypatch) -> None:
     doc = make_document(org_id=test_org_id)
@@ -35,7 +34,6 @@ def test_upload_document_accepted(authed_client, test_org_id, monkeypatch) -> No
     assert response.status_code == 202
     assert response.json()["id"] == str(doc.id)
 
-
 @pytest.mark.integration
 def test_upload_empty_file_400(authed_client, monkeypatch) -> None:
     service = IngestDocumentService(
@@ -53,7 +51,6 @@ def test_upload_empty_file_400(authed_client, monkeypatch) -> None:
     )
     assert response.status_code == 400
 
-
 @pytest.mark.integration
 def test_list_documents(authed_client, test_org_id, monkeypatch) -> None:
     doc = make_document(org_id=test_org_id)
@@ -68,7 +65,6 @@ def test_list_documents(authed_client, test_org_id, monkeypatch) -> None:
     assert body["total"] == 1
     assert body["items"][0]["id"] == str(doc.id)
 
-
 @pytest.mark.integration
 def test_get_document_not_found(authed_client, monkeypatch) -> None:
     monkeypatch.setattr(f"{ROUTES}.get_document_repository", lambda: FakeDocumentRepo())
@@ -77,7 +73,6 @@ def test_get_document_not_found(authed_client, monkeypatch) -> None:
         headers={"Authorization": "Bearer x"},
     )
     assert response.status_code == 404
-
 
 @pytest.mark.integration
 def test_list_chunks(authed_client, test_org_id, monkeypatch) -> None:

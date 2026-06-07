@@ -8,7 +8,6 @@ from uuid import UUID, uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-
 @pytest.fixture(scope="session")
 def app_instance():
     os.environ.setdefault("ENVIRONMENT", "development")
@@ -28,16 +27,13 @@ def app_instance():
 
     return app
 
-
 @pytest.fixture
 def test_org_id() -> UUID:
     return uuid4()
 
-
 @pytest.fixture
 def test_user_id() -> UUID:
     return uuid4()
-
 
 @pytest.fixture
 def auth_claims(test_user_id: UUID, test_org_id: UUID) -> dict:
@@ -50,12 +46,10 @@ def auth_claims(test_user_id: UUID, test_org_id: UUID) -> dict:
         "type": "access",
     }
 
-
 @pytest.fixture
 def api_client(app_instance) -> Iterator[TestClient]:
     with TestClient(app_instance) as client:
         yield client
-
 
 @pytest.fixture
 def authed_client(
@@ -70,7 +64,6 @@ def authed_client(
     yield api_client
     app_instance.dependency_overrides.pop(get_current_claims, None)
 
-
 @pytest.fixture
 def storage_dir(tmp_path: Path) -> Path:
     path = tmp_path / "object-storage"
@@ -78,12 +71,10 @@ def storage_dir(tmp_path: Path) -> Path:
     os.environ["DOCUMENT_STORAGE_DIR"] = str(path)
     return path
 
-
 @pytest.fixture(autouse=True)
 def _clear_dependency_overrides(app_instance) -> Iterator[None]:
     yield
     app_instance.dependency_overrides.clear()
-
 
 @pytest.fixture
 def sample_text_bytes() -> bytes:

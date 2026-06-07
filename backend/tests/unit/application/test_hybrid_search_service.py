@@ -7,11 +7,9 @@ import pytest
 from app.application.services.hybrid_search_service import HybridSearchService
 from app.domain.value_objects.document import Document
 
-
 class FakeEmbedder:
     async def embed_text(self, text: str) -> list[float]:
         return [0.1, 0.2]
-
 
 class FakeVectorStore:
     def __init__(self, results: list[dict]):
@@ -20,14 +18,12 @@ class FakeVectorStore:
     async def query_by_similarity(self, **kwargs) -> list[dict]:
         return self._results
 
-
 class FakeFTS:
     def __init__(self, results: list[Document]):
         self._results = results
 
     async def search(self, **kwargs) -> list[Document]:
         return self._results
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio
@@ -76,7 +72,6 @@ async def test_hybrid_search_skips_invalid_vector_matches() -> None:
 
     ids = {doc.id for doc in results}
     assert ids == {"v1", "k1"}
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio

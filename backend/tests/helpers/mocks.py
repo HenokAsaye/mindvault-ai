@@ -12,7 +12,6 @@ from app.domain.entities.organization_membership import OrganizationMembership
 from app.domain.entities.user import User
 from app.domain.value_objects.membership_status import MembershipStatus
 
-
 @dataclass
 class FakeUserRepo:
     by_email: dict[str, User] = field(default_factory=dict)
@@ -33,7 +32,6 @@ class FakeUserRepo:
         if user:
             user.last_login_at = user.last_login_at
 
-
 @dataclass
 class FakeOrgRepo:
     slugs: set[str] = field(default_factory=set)
@@ -46,7 +44,6 @@ class FakeOrgRepo:
         self.slugs.add(org.slug)
         self.orgs[org.id] = org
         return org
-
 
 @dataclass
 class FakeMembershipRepo:
@@ -80,7 +77,6 @@ class FakeMembershipRepo:
     ) -> list[OrganizationMembership]:
         return [m for m in self.memberships if m.user_id == user_id]
 
-
 class FakeUoW:
     def __init__(
         self,
@@ -106,13 +102,11 @@ class FakeUoW:
     async def rollback(self) -> None:
         pass
 
-
 def uow_factory(uow: FakeUoW):
     def _factory() -> FakeUoW:
         return uow
 
     return _factory
-
 
 @dataclass
 class FakeDocumentRepo:
@@ -185,7 +179,6 @@ class FakeDocumentRepo:
             if d.org_id == oid and d.status == DocumentStatus.FAILED
         )
 
-
 @dataclass
 class FakeChunkRepo:
     chunks: list[Any] = field(default_factory=list)
@@ -196,7 +189,6 @@ class FakeChunkRepo:
     def count_by_org(self, org_id: str) -> int:
         oid = UUID(org_id) if isinstance(org_id, str) else org_id
         return sum(1 for c in self.chunks if c.org_id == oid)
-
 
 @dataclass
 class FakeSyncDocumentRepo:
@@ -224,7 +216,6 @@ class FakeSyncDocumentRepo:
             if token_count is not None:
                 doc.token_count = token_count
 
-
 @dataclass
 class FakeSyncChunkRepo:
     chunks: list[Any] = field(default_factory=list)
@@ -234,7 +225,6 @@ class FakeSyncChunkRepo:
 
     def delete_by_document(self, *, document_id: UUID) -> None:
         self.chunks = [c for c in self.chunks if c.document_id != document_id]
-
 
 class FakeMemoryStorage:
     """Minimal ObjectStorage fake."""
@@ -254,11 +244,9 @@ class FakeMemoryStorage:
     def delete_object(self, *, key: str) -> None:
         self._objects.pop(key, None)
 
-
 class FakeEmbedder:
     def embed_texts(self, texts: list[str]) -> list[list[float]]:
         return [[0.1, 0.2, 0.3] for _ in texts]
-
 
 class FakeVectorStore:
     def __init__(self) -> None:
@@ -272,7 +260,6 @@ class FakeVectorStore:
 
     async def delete_by_document_id(self, *, document_id: str, namespace: str) -> None:
         pass
-
 
 def make_document(
     *,

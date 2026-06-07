@@ -10,13 +10,11 @@ from app.domain.ports.outbound.document_loader import (
     UnsupportedDocumentTypeError,
 )
 
-
 @pytest.mark.unit
 def test_registry_loads_text() -> None:
     registry = DocumentLoaderRegistry([TextDocumentLoader()])
     text = registry.load_text(data=b"hello", source_type="text")
     assert text == "hello"
-
 
 @pytest.mark.unit
 def test_registry_raises_for_unknown_type() -> None:

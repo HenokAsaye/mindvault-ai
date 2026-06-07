@@ -16,7 +16,6 @@ from app.domain.value_objects.membership_status import MembershipStatus
 from app.domain.value_objects.user_role import UserRole
 from tests.helpers.mocks import FakeMembershipRepo, FakeUoW, uow_factory
 
-
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_switch_org_issues_new_tokens() -> None:
@@ -47,7 +46,6 @@ async def test_switch_org_issues_new_tokens() -> None:
     assert result.access_token
     assert result.refresh_token
     assert result.active_org_id == org_id
-
 
 @pytest.mark.unit
 @pytest.mark.asyncio

@@ -6,7 +6,6 @@ from app.adapters.outbound.db.repositories.password_hasher_impl import (
     BcryptPasswordHasher,
 )
 
-
 @pytest.mark.unit
 class TestBcryptPasswordHasher:
     def test_hash_and_verify(self) -> None:
