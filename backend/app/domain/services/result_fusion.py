@@ -3,7 +3,6 @@ from collections import defaultdict
 from app.domain.value_objects.document import Document
 from app.domain.services.score_normalizer import normalize_scores
 
-
 def fuse_results(
     vector_results: List[Document],
     key_results: List[Document],
@@ -18,12 +17,10 @@ def fuse_results(
     if "vector" not in fusion_weights or "key" not in fusion_weights:
         raise ValueError("fusion_weights must have 'vector' and 'key' keys")
 
-    # Normalize fusion weights to sum to 1
     total_weight = fusion_weights["vector"] + fusion_weights["key"]
     w_vec = fusion_weights["vector"] / total_weight
     w_key = fusion_weights["key"] / total_weight
 
-    # Step 1: Extract and normalize scores per strategy independently
     vec_scores = [doc.score for doc in vector_results]
     key_scores = [doc.score for doc in key_results]
 
@@ -62,7 +59,6 @@ def fuse_results(
             w_vec * candidate["vector_score_norm"] + w_key * candidate["key_score_norm"]
         )
 
-        # Create new document with fused score
         fused_doc = Document(
             id=doc.id,
             text=doc.text,
@@ -76,10 +72,8 @@ def fuse_results(
         )
         fused_docs.append(fused_doc)
 
-    # Step 4: Sort by fused score (descending) and return top-K
     fused_docs.sort(key=lambda d: d.score, reverse=True)
     return fused_docs[:top_k]
-
 
 def remove_duplicates(
     documents: List[Document],
@@ -95,11 +89,10 @@ def remove_duplicates(
 
     return list(seen.values())
 
-
 def apply_reciprocal_rank_fusion(
     vector_results: List[Document],
     key_results: List[Document],
-    k: int = 60,  # Standard RRF parameter
+    k: int = 60,
     top_k: int = 5,
 ) -> List[Document]:
     """Fuse using Reciprocal Rank Fusion (RRF) formula.
@@ -120,25 +113,22 @@ def apply_reciprocal_rank_fusion(
     sources: Dict[str, set] = defaultdict(set)
     doc_map: Dict[str, Document] = {}
 
-    # Calculate RRF scores for vector results
     for rank, doc in enumerate(vector_results, start=1):
         rrf_scores[doc.id] = rrf_scores.get(doc.id, 0) + 1 / (k + rank)
         sources[doc.id].add("vector")
         doc_map[doc.id] = doc
 
-    # Calculate RRF scores for key results
     for rank, doc in enumerate(key_results, start=1):
         rrf_scores[doc.id] = rrf_scores.get(doc.id, 0) + 1 / (k + rank)
         sources[doc.id].add("key")
         if doc.id not in doc_map:
             doc_map[doc.id] = doc
 
-    # Create fused documents
     fused_docs = [
         Document(
             id=doc_id,
             text=doc_map[doc_id].text,
-            score=min(rrf_scores[doc_id], 1.0),  # Clamp to [0, 1]
+            score=min(rrf_scores[doc_id], 1.0),
             source="hybrid",
             metadata=doc_map[doc_id].metadata,
             vector_score=doc_map[doc_id].vector_score,
@@ -149,6 +139,5 @@ def apply_reciprocal_rank_fusion(
         for doc_id in rrf_scores
     ]
 
-    # Sort and return top-K
     fused_docs.sort(key=lambda d: d.score, reverse=True)
     return fused_docs[:top_k]

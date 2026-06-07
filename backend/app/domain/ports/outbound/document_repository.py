@@ -5,7 +5,6 @@ from uuid import UUID
 
 from app.domain.entities.document import Document
 
-
 class DocumentRepository(ABC):
     @abstractmethod
     async def save(self, document: Document) -> None: ...
@@ -49,7 +48,6 @@ class DocumentRepository(ABC):
         chunk_count: int | None = None,
         token_count: int | None = None,
     ) -> None: ...
-
 
 class SyncDocumentRepository(ABC):
     @abstractmethod

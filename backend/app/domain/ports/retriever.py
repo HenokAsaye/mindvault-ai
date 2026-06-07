@@ -1,7 +1,6 @@
 from typing import List, Dict, Any, Optional, Protocol, runtime_checkable
 from app.domain.value_objects.document import Document
 
-
 @runtime_checkable
 class Retriever(Protocol):
 

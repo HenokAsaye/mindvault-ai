@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from uuid import UUID
 
-
 @dataclass(slots=True)
 class RegisterUserCommand:
     email: str
@@ -12,12 +11,10 @@ class RegisterUserCommand:
     full_name: str
     organization_name: str
 
-
 @dataclass(slots=True)
 class RegisterUserResult:
     user_id: UUID
     default_org_id: UUID | None = None
-
 
 class RegisterUserUseCase(ABC):
     @abstractmethod

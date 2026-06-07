@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-
 @dataclass(slots=True)
 class ChatSession:
     id: UUID

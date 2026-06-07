@@ -9,7 +9,6 @@ from app.domain.services.result_fusion import fuse_results, apply_reciprocal_ran
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass(slots=True, frozen=True)
 class RetrievalConfig:
 
@@ -25,9 +24,7 @@ class RetrievalConfig:
     alpha: float = 0.5
     user_reranker: bool = False
 
-
-Reranker = Protocol  # Placeholder for reranker interface
-
+Reranker = Protocol
 
 class RetrievalPolicy:
     def __init__(
@@ -77,7 +74,7 @@ class RetrievalPolicy:
                 return await self._retrieve_vector(query, final_top_k, filters)
             elif strategy == "key":
                 return await self._retrieve_key(query, final_top_k, filters)
-            else:  # hybrid
+            else:
                 return await self._retrieve_hybrid(query, final_top_k, filters)
         except Exception as e:
             logger.error(f"Retrieval failed: {e}", exc_info=True)
@@ -175,7 +172,7 @@ class RetrievalPolicy:
                     top_k=top_k,
                     normalization_method=self.config.normalization_method,
                 )
-            else:  # rrf
+            else:
                 fused_results = apply_reciprocal_rank_fusion(
                     vector_results=vector_results,
                     key_results=key_results,

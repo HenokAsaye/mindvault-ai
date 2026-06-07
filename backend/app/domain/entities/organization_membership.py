@@ -5,7 +5,6 @@ from uuid import UUID
 from app.domain.value_objects.user_role import UserRole
 from app.domain.value_objects.membership_status import MembershipStatus
 
-
 @dataclass(slots=True)
 class OrganizationMembership:
     id: UUID

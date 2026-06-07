@@ -4,7 +4,6 @@ from uuid import UUID
 
 from app.domain.entities.organization import Organization
 
-
 class OrganizationRepository(ABC):
     @abstractmethod
     async def create_org(self, *, org: Organization) -> Organization: ...

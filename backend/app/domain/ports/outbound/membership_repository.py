@@ -4,7 +4,6 @@ from uuid import UUID
 
 from app.domain.entities.organization_membership import OrganizationMembership
 
-
 class MembershipRepository(ABC):
     @abstractmethod
     async def create_membership(

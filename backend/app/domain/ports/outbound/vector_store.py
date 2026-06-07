@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
-
 class VectorStore(ABC):
     @abstractmethod
     async def upsert(

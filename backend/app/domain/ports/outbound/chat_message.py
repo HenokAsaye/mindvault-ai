@@ -5,7 +5,6 @@ from uuid import UUID
 
 from app.domain.entities.chat_message import ChatMessage
 
-
 class ChatMessageRepository(ABC):
     @abstractmethod
     async def add_message(self, chat_message: ChatMessage) -> None: ...

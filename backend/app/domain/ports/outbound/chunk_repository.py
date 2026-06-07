@@ -4,7 +4,6 @@ from uuid import UUID
 
 from app.domain.entities.document_chunk import DocumentChunk
 
-
 class ChunkRepository(ABC):
     @abstractmethod
     async def add_many(self, chunks: list[DocumentChunk]) -> None: ...
@@ -17,7 +16,6 @@ class ChunkRepository(ABC):
 
     @abstractmethod
     async def count_by_org(self, org_id: str) -> int: ...
-
 
 class SyncChunkRepository(ABC):
     @abstractmethod

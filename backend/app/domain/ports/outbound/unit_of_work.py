@@ -8,7 +8,6 @@ from app.domain.ports.outbound.membership_repository import MembershipRepository
 from app.domain.ports.outbound.organization_repository import OrganizationRepository
 from app.domain.ports.outbound.user_repository import UserRepository
 
-
 class UnitOfWork(ABC):
     users: UserRepository
     organizations: OrganizationRepository

@@ -5,7 +5,6 @@ from uuid import UUID
 
 from app.domain.entities.chat_session import ChatSession
 
-
 class ChatSessionRepository(ABC):
     @abstractmethod
     async def create_chat_session(self, chat_session: ChatSession) -> None: ...

@@ -1,7 +1,6 @@
 import math
 from typing import List
 
-
 def normalize_scores_softmax(scores: List[float]) -> List[float]:
     if not scores:
         raise ValueError("Cannot normalize empty score list")
@@ -14,7 +13,6 @@ def normalize_scores_softmax(scores: List[float]) -> List[float]:
     sum_exp = sum(exp_scores)
 
     return [exp_s / sum_exp for exp_s in exp_scores]
-
 
 def normalize_scores_minmax(scores: List[float]) -> List[float]:
     if not scores:
@@ -32,7 +30,6 @@ def normalize_scores_minmax(scores: List[float]) -> List[float]:
 
     return [(s - min_score) / range_score for s in scores]
 
-
 def normalize_scores_zscore(scores: List[float]) -> List[float]:
     if not scores:
         raise ValueError("Cannot normalize empty score list")
@@ -48,7 +45,6 @@ def normalize_scores_zscore(scores: List[float]) -> List[float]:
         return [0.0] * len(scores)
 
     return [(s - mean) / std for s in scores]
-
 
 def normalize_scores(scores: List[float], method: str = "softmax") -> List[float]:
     if method == "softmax":

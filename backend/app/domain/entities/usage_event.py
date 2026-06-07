@@ -5,18 +5,13 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-
 @dataclass(slots=True)
 class UsageEvent:
-    """
-    Tracks billable or rate-limit-relevant actions for analytics.
-    """
-
     id: UUID
     org_id: UUID
     user_id: UUID | None
-    event_type: str  # chat_completion | embedding | upload | search
-    provider: str | None = None  # openai | anthropic | pinecone...
+    event_type: str
+    provider: str | None = None
     model: str | None = None
     prompt_tokens: int = 0
     completion_tokens: int = 0
