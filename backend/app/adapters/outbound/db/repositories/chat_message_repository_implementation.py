@@ -9,10 +9,8 @@ from app.domain.entities.chat_message import ChatMessage
 from app.domain.ports.outbound.chat_message import ChatMessageRepository
 from app.adapters.outbound.db.sqlalchemy_models import ChatMessageORM
 
-
 class NotFound(Exception):
     pass
-
 
 class ChatMessageRepositoryImplementation(ChatMessageRepository):
     def __init__(self, db_session: AsyncSession) -> None:

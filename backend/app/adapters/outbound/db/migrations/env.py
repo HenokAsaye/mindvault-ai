@@ -15,11 +15,8 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-
 def _sync_url(url: str) -> str:
-    # Alembic uses a sync engine.
     return url.replace("+asyncpg", "+psycopg2")
-
 
 def run_migrations_offline() -> None:
     url = _sync_url(settings.database_url)
@@ -33,7 +30,6 @@ def run_migrations_offline() -> None:
 
     with context.begin_transaction():
         context.run_migrations()
-
 
 def run_migrations_online() -> None:
     section = config.get_section(config.config_ini_section) or {}
@@ -51,7 +47,6 @@ def run_migrations_online() -> None:
 
         with context.begin_transaction():
             context.run_migrations()
-
 
 if context.is_offline_mode():
     run_migrations_offline()

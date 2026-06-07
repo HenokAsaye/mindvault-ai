@@ -18,7 +18,6 @@ from app.domain.ports.outbound.document_repository import (
     SyncDocumentRepository,
 )
 
-
 def _document_orm_to_entity(row: DocumentORM) -> Document:
     return Document(
         id=row.id,
@@ -35,7 +34,6 @@ def _document_orm_to_entity(row: DocumentORM) -> Document:
         created_at=row.created_at,
         updated_at=row.updated_at,
     )
-
 
 class DocumentRepositoryImpl(DocumentRepository):
     """Async repository used by API request handlers."""
@@ -175,7 +173,6 @@ class DocumentRepositoryImpl(DocumentRepository):
             )
             await session.commit()
 
-
 class SyncDocumentRepositoryImpl(SyncDocumentRepository):
     def get_by_id(self, *, document_id: UUID) -> Document | None:
         with worker_session() as session:
@@ -210,7 +207,6 @@ class SyncDocumentRepositoryImpl(SyncDocumentRepository):
                 .values(**values)
             )
             session.commit()
-
 
 class SyncChunkRepositoryImpl(SyncChunkRepository):
     """Sync chunk repository used by Celery workers."""
@@ -248,7 +244,6 @@ class SyncChunkRepositoryImpl(SyncChunkRepository):
                 )
             )
             session.commit()
-
 
 class ChunkRepositoryImpl(ChunkRepository):
     """Async chunk repository (used by API: list/delete)."""

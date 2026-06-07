@@ -8,7 +8,6 @@ from app.adapters.outbound.db.sqlalchemy_models import OrganizationORM
 from app.domain.entities.organization import Organization
 from app.domain.ports.outbound.organization_repository import OrganizationRepository
 
-
 def _to_domain(model: OrganizationORM) -> Organization:
     return Organization(
         id=model.id,
@@ -19,7 +18,6 @@ def _to_domain(model: OrganizationORM) -> Organization:
         created_at=model.created_at,
         updated_at=model.updated_at,
     )
-
 
 class OrganizationRepositoryImpl(OrganizationRepository):
     def __init__(self, *, db: AsyncSession) -> None:

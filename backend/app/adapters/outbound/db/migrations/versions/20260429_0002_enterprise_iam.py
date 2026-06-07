@@ -16,7 +16,6 @@ down_revision = "20260428_0001"
 branch_labels = None
 depends_on = None
 
-
 def upgrade() -> None:
     op.add_column(
         "users",
@@ -104,7 +103,6 @@ def upgrade() -> None:
         ["org_id", "status"],
         unique=False,
     )
-
 
 def downgrade() -> None:
     op.drop_index("ix_membership_org_status", table_name="organization_memberships")

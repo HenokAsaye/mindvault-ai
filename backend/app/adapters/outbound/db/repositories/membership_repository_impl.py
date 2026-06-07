@@ -14,7 +14,6 @@ from app.domain.ports.outbound.membership_repository import MembershipRepository
 from app.domain.value_objects.membership_status import MembershipStatus
 from app.domain.value_objects.user_role import UserRole
 
-
 def _to_domain(model: OrganizationMembershipORM) -> OrganizationMembership:
     return OrganizationMembership(
         id=model.id,
@@ -27,7 +26,6 @@ def _to_domain(model: OrganizationMembershipORM) -> OrganizationMembership:
         created_at=model.created_at,
         updated_at=model.updated_at,
     )
-
 
 class MembershipRepositoryImpl(MembershipRepository):
     def __init__(self, *, db: AsyncSession) -> None:

@@ -16,7 +16,6 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
-
 def upgrade() -> None:
     op.create_table(
         "users",
@@ -128,7 +127,6 @@ def upgrade() -> None:
         ["org_id", "role", "status"],
         unique=False,
     )
-
 
 def downgrade() -> None:
     op.drop_index(

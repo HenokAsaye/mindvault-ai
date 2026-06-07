@@ -11,7 +11,6 @@ from app.adapters.outbound.db.repositories import (
 )
 from app.domain.ports.outbound.unit_of_work import UnitOfWork
 
-
 class SQLAlchemyUnitOfWork(UnitOfWork):
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]) -> None:
         self._session_factory = session_factory

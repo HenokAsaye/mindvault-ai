@@ -9,7 +9,6 @@ from app.adapters.outbound.db.sqlalchemy_models import UserORM
 from app.domain.entities.user import User
 from app.domain.ports.outbound.user_repository import UserRepository
 
-
 def _to_domain(model: UserORM) -> User:
     return User(
         id=model.id,
@@ -25,7 +24,6 @@ def _to_domain(model: UserORM) -> User:
         created_at=model.created_at,
         updated_at=model.updated_at,
     )
-
 
 class UserRepositoryImpl(UserRepository):
     def __init__(self, *, db: AsyncSession) -> None:

@@ -2,7 +2,6 @@ from sqlalchemy import text as sa_text
 from app.domain.ports.outbound.full_text_search import FullTextSearch
 from app.domain.value_objects.document import Document
 
-
 class FTSAdapter(FullTextSearch):
     def __init__(self, *, session_factory) -> None:
         self._session_factory = session_factory

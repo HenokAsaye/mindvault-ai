@@ -9,10 +9,8 @@ from sqlalchemy import DateTime, ForeignKey, Index, String, Text, UniqueConstrai
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-
 class Base(DeclarativeBase):
     pass
-
 
 class UserORM(Base):
     __tablename__ = "users"
@@ -38,7 +36,6 @@ class UserORM(Base):
     email_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-
 class OrganizationORM(Base):
     __tablename__ = "organizations"
 
@@ -60,7 +57,6 @@ class OrganizationORM(Base):
     members: Mapped[list["OrganizationMembershipORM"]] = relationship(
         "OrganizationMembershipORM", back_populates="org"
     )
-
 
 class OrganizationInvitationORM(Base):
     __tablename__ = "organization_invitations"
@@ -86,7 +82,6 @@ class OrganizationInvitationORM(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-
 
 class OrganizationMembershipORM(Base):
     __tablename__ = "organization_memberships"
@@ -127,7 +122,6 @@ class OrganizationMembershipORM(Base):
         Index("ix_membership_org_status", "org_id", "status"),
     )
 
-
 class RefreshTokenORM(Base):
     __tablename__ = "refresh_tokens"
 
@@ -159,7 +153,6 @@ class RefreshTokenORM(Base):
 
     __table_args__ = (Index("ix_refresh_user_family", "user_id", "token_family"),)
 
-
 class AuditLogORM(Base):
     __tablename__ = "audit_logs"
 
@@ -176,7 +169,6 @@ class AuditLogORM(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-
 
 class DocumentORM(Base):
     __tablename__ = "documents"
@@ -212,7 +204,6 @@ class DocumentORM(Base):
     )
 
     __table_args__ = (Index("ix_documents_org_status", "org_id", "status"),)
-
 
 class DocumentChunkORM(Base):
     __tablename__ = "document_chunks"
@@ -250,7 +241,6 @@ class DocumentChunkORM(Base):
         Index("ix_chunks_org_document", "org_id", "document_id"),
     )
 
-
 class ChatSessionORM(Base):
     __tablename__ = "chat_sessions"
 
@@ -286,7 +276,6 @@ class ChatSessionORM(Base):
     messages: Mapped[list[ChatMessageORM]] = relationship(
         back_populates="session", cascade="all, delete-orphan"
     )
-
 
 class ChatMessageORM(Base):
     __tablename__ = "chat_messages"
