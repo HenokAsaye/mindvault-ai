@@ -2,7 +2,6 @@ from typing import List
 from app.domain.ports.outbound.full_text_search import FullTextSearch
 from app.domain.value_objects.document import Document
 
-
 class KeyRetriever:
     def __init__(self, fts_adapter: FullTextSearch):
         self._fts_adapter = fts_adapter

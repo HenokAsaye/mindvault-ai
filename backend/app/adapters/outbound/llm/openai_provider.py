@@ -6,7 +6,6 @@ from openai import AsyncOpenAI
 
 from app.domain.ports.outbound.llm_port import LLMPort
 
-
 class OpenAIAdapter(LLMPort):
     def __init__(self, api_key: str, model: str = "gpt-4o-mini") -> None:
         self._client = AsyncOpenAI(api_key=api_key)

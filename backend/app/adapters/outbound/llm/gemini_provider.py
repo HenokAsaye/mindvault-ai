@@ -6,7 +6,6 @@ import google.generativeai as genai
 
 from app.domain.ports.outbound.llm_port import LLMPort
 
-
 class GeminiAdapter(LLMPort):
     def __init__(self, api_key: str, model: str = "gemini-2.0-flash") -> None:
         genai.configure(api_key=api_key)
