@@ -12,7 +12,6 @@ from app.domain.services.retrieval_policy import RetrievalPolicy
 from app.infrastructure.config.retrieval_config import RetrievalConfig
 from app.infrastructure.di import providers
 
-
 class _KeyRetrieverAdapter:
     def __init__(self, key_retriever: KeyRetriever) -> None:
         self._key_retriever = key_retriever
@@ -26,7 +25,6 @@ class _KeyRetrieverAdapter:
             org_id=str(org_id),
             top_k=top_k,
         )
-
 
 def setup_retrieval_dependencies(
     *,

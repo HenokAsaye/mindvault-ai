@@ -8,7 +8,6 @@ from app.domain.services.retrieval_policy import (
     RetrievalConfig as DomainRetrievalConfig,
 )
 
-
 @dataclass(slots=True, frozen=True)
 class RetrievalConfig:
     """Configuration for retrieval policy and strategies."""

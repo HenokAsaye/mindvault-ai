@@ -10,7 +10,6 @@ from uuid import uuid4
 import jwt
 from redis.asyncio import Redis
 
-
 class ThrottleService:
     def __init__(
         self,
@@ -57,7 +56,6 @@ class ThrottleService:
         await self._redis.delete(
             f"auth:fail:ip:{ip}", f"auth:fail:user:{username.lower()}"
         )
-
 
 class TokenService:
     def __init__(
@@ -177,7 +175,6 @@ class TokenService:
     async def is_user_globally_revoked(self, *, user_id: str, iat: int) -> bool:
         cut = await self._redis.get(f"user:sessions:revoked_after:{user_id}")
         return bool(cut and int(iat) <= int(cut))
-
 
 class InvitationService:
     """Invite token: issuer|invite_id|org_id|email|role|exp|sig."""

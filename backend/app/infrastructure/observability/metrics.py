@@ -7,7 +7,6 @@ from app.infrastructure.di.providers import (
     get_chunk_repository,
 )
 
-
 class MetricsService:
     def __init__(
         self,

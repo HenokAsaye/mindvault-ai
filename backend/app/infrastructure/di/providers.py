@@ -54,14 +54,11 @@ from app.infrastructure.security.redis_services import (
     TokenService,
 )
 
-
 def get_uow_factory():
     return lambda: SQLAlchemyUnitOfWork(SessionFactory)
 
-
 def get_password_hasher():
     return BcryptPasswordHasher()
-
 
 def get_token_provider():
     return JwtTokenProvider(
@@ -71,14 +68,11 @@ def get_token_provider():
         audience=settings.jwt_audience,
     )
 
-
 def get_sync_embedder() -> SyncLocalBGEAdapter:
     return SyncLocalBGEAdapter(model_name="BAAI/bge-small-en-v1.5")
 
-
 def get_redis_client() -> Redis:
     return Redis.from_url(settings.redis_url, decode_responses=True)
-
 
 def get_token_service() -> TokenService:
     return TokenService(
@@ -89,7 +83,6 @@ def get_token_service() -> TokenService:
         audience=settings.jwt_audience,
     )
 
-
 def get_throttle_service() -> ThrottleService:
     return ThrottleService(
         get_redis_client(),
@@ -99,11 +92,9 @@ def get_throttle_service() -> ThrottleService:
         hard_ttl=settings.login_hard_lock_seconds,
     )
 
-
 def get_invitation_service() -> InvitationService:
     signing_secret = settings.invitation_signing_secret or settings.jwt_secret
     return InvitationService(secret=signing_secret, issuer=settings.jwt_issuer)
-
 
 def get_email_sender() -> EmailSender:
     if not settings.use_smtp_email_delivery:
@@ -118,7 +109,6 @@ def get_email_sender() -> EmailSender:
         from_name=settings.smtp_from_name or "MindVault AI",
     )
 
-
 def get_iam_service() -> IAMService:
     return IAMService(
         session_factory=SessionFactory,
@@ -132,13 +122,11 @@ def get_iam_service() -> IAMService:
         mfa_attempt_ttl_seconds=settings.mfa_attempt_ttl_seconds,
     )
 
-
 def get_register_user_service():
     return RegisterUserService(
         uow_factory=get_uow_factory(),
         password_hasher=get_password_hasher(),
     )
-
 
 def get_login_user_service():
     return LoginUserService(
@@ -149,7 +137,6 @@ def get_login_user_service():
         refresh_token_ttl_seconds=settings.refresh_token_ttl_seconds,
     )
 
-
 def get_switch_org_service():
     return SwitchOrganizationService(
         uow_factory=get_uow_factory(),
@@ -158,11 +145,9 @@ def get_switch_org_service():
         refresh_token_ttl_seconds=settings.refresh_token_ttl_seconds,
     )
 
-
 @lru_cache(maxsize=1)
 def get_object_storage() -> ObjectStorage:
     return LocalObjectStorage(base_dir=settings.document_storage_dir)
-
 
 @lru_cache(maxsize=1)
 def get_document_loader_registry() -> DocumentLoaderRegistry:
@@ -174,7 +159,6 @@ def get_document_loader_registry() -> DocumentLoaderRegistry:
         ]
     )
 
-
 @lru_cache(maxsize=1)
 def get_chunking_config() -> ChunkingConfig:
     return ChunkingConfig(
@@ -182,24 +166,19 @@ def get_chunking_config() -> ChunkingConfig:
         chunk_overlap_chars=settings.document_chunk_overlap_chars,
     )
 
-
 def get_document_repository() -> DocumentRepository:
     return DocumentRepositoryImpl(session_factory=SessionFactory)
-
 
 def get_chunk_repository() -> ChunkRepository:
     return ChunkRepositoryImpl(session_factory=SessionFactory)
 
-
 def get_full_text_search() -> FullTextSearch:
     return FTSAdapter(session_factory=SessionFactory)
-
 
 def _enqueue_process_document(*, document_id: str) -> None:
     from app.application.tasks.document_tasks import process_document_task
 
     process_document_task.delay(document_id=document_id)
-
 
 def get_ingest_document_service() -> IngestDocumentService:
     return IngestDocumentService(
@@ -209,7 +188,6 @@ def get_ingest_document_service() -> IngestDocumentService:
         max_size_bytes=settings.document_max_size_bytes,
         allowed_source_types=settings.document_allowed_source_types,
     )
-
 
 def get_process_document_chunks_service() -> ProcessDocumentChunksService:
     return ProcessDocumentChunksService(
@@ -222,11 +200,9 @@ def get_process_document_chunks_service() -> ProcessDocumentChunksService:
         vector_store=get_vector_store(),
     )
 
-
 @lru_cache(maxsize=1)
 def get_embedder() -> AsyncLocalBGEAdapter:
     return AsyncLocalBGEAdapter(model_name="BAAI/bge-small-en-v1.5")
-
 
 @lru_cache(maxsize=1)
 def get_vector_store() -> PineconeVectorStore:
@@ -235,12 +211,10 @@ def get_vector_store() -> PineconeVectorStore:
         index_name=settings.pinecone_index_name,
     )
 
-
 def get_reranker() -> Reranker:
     if settings.cohere_api_key:
         return CohereReranker(api_key=settings.cohere_api_key)
     return NoOpReranker()
-
 
 def get_hybrid_search_service() -> HybridSearchService:
     return HybridSearchService(
@@ -249,13 +223,11 @@ def get_hybrid_search_service() -> HybridSearchService:
         full_text_search=get_full_text_search(),
     )
 
-
 def get_llm() -> OpenAIAdapter:
     return OpenAIAdapter(
         api_key=settings.openai_api_key,
         model=settings.openai_model,
     )
-
 
 def get_chat_service() -> ChatService:
     return ChatService(
@@ -264,7 +236,6 @@ def get_chat_service() -> ChatService:
         llm=get_llm(),
         uow_factory=get_uow_factory(),
     )
-
 
 def get_semantic_search_service() -> SemanticSearchService:
     return SemanticSearchService(
