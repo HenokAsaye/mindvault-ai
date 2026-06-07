@@ -11,7 +11,7 @@ from tests.helpers.mocks import FakeChunkRepo, FakeDocumentRepo, make_document
 
 @pytest.mark.unit
 class TestMetricsService:
-    def test_counts_documents_and_chunks(self) -> None:
+    async def test_counts_documents_and_chunks(self) -> None:
         org_id = make_document().org_id
         doc_repo = FakeDocumentRepo()
         doc = make_document(org_id=org_id, status=DocumentStatus.READY)
@@ -22,14 +22,14 @@ class TestMetricsService:
         metrics = MetricsService(
             documents=doc_repo, chunks=chunk_repo, org_id=str(org_id)
         )
-        assert metrics.get_total_documents() == 1
-        assert metrics.get_total_chunks() == 1
-        assert metrics.get_average_chunks_per_document() == 1.0
+        assert await metrics.get_total_documents() == 1
+        assert await metrics.get_total_chunks() == 1
+        assert await metrics.get_average_chunks_per_document() == 1.0
 
-    def test_average_chunks_zero_when_no_documents(self) -> None:
+    async def test_average_chunks_zero_when_no_documents(self) -> None:
         metrics = MetricsService(
             documents=FakeDocumentRepo(),
             chunks=FakeChunkRepo(),
             org_id=str(make_document().org_id),
         )
-        assert metrics.get_average_chunks_per_document() == 0.0
+        assert await metrics.get_average_chunks_per_document() == 0.0
