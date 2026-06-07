@@ -10,7 +10,6 @@ from app.domain.ports.outbound.object_storage import ObjectStorage
 FILE_MODE = 0o644
 DIR_MODE = 0o755
 
-
 class LocalObjectStorage(ObjectStorage):
     def __init__(self, *, base_dir: str | Path) -> None:
         self._base_dir = Path(base_dir).resolve()
@@ -30,19 +29,14 @@ class LocalObjectStorage(ObjectStorage):
     ) -> str:
         target = self._resolve(key)
         target.parent.mkdir(parents=True, exist_ok=True)
-        # Make every directory between base_dir and the file traversable so
-        # other-uid processes (Celery worker) can chdir/open through them.
         for parent in _parents_below(target.parent, self._base_dir):
             _ensure_mode(parent, DIR_MODE)
-        # Atomic write: write to temp in same dir, fsync, then rename.
         fd, tmp_path = tempfile.mkstemp(prefix=".tmp-", dir=str(target.parent))
         try:
             with os.fdopen(fd, "wb") as fh:
                 fh.write(data)
                 fh.flush()
                 os.fsync(fh.fileno())
-            # mkstemp creates 0600; chmod *before* rename so the visible file
-            # is never momentarily unreadable to the worker.
             os.chmod(tmp_path, FILE_MODE)
             os.replace(tmp_path, target)
         except Exception:
@@ -62,7 +56,6 @@ class LocalObjectStorage(ObjectStorage):
         except FileNotFoundError:
             return
 
-
 def _parents_below(start: Path, base: Path) -> list[Path]:
     """Return ``[base, ..., start]`` if start is under base else ``[start]``."""
     try:
@@ -75,7 +68,6 @@ def _parents_below(start: Path, base: Path) -> list[Path]:
         cur = cur / part
         chain.append(cur)
     return chain
-
 
 def _ensure_mode(path: Path, mode: int) -> None:
     """Best-effort chmod; ignore if we don't own the file (e.g. existing dir)."""

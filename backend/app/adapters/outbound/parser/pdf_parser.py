@@ -8,7 +8,6 @@ import fitz
 
 logger = logging.getLogger(__name__)
 
-
 class PDFParser:
     def extract_text(self, file_stream: BinaryIO) -> str:
         try:

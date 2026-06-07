@@ -11,7 +11,6 @@ from app.domain.ports.outbound.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 
-
 class PGVectorStore(VectorStore):
     def __init__(self, engine: Any) -> None:
         self._engine = engine
@@ -163,7 +162,6 @@ class PGVectorStore(VectorStore):
                 document_id,
                 org_id,
             )
-
 
 class SyncPGVectorStore:
     def __init__(self, engine: Any) -> None:

@@ -1,8 +1,5 @@
-"""Reranker adapter implementation."""
-
 from app.domain.ports.outbound.reranker import Reranker
 from app.domain.value_objects.document import Document
-
 
 class NoOpReranker(Reranker):
 

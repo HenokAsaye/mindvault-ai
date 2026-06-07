@@ -11,7 +11,6 @@ from app.domain.ports.outbound.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 
-
 class PineconeVectorStore(VectorStore):
     def __init__(self, api_key: str, index_name: str) -> None:
         logger.info("Initializing Pinecone vector store with index: %s", index_name)
