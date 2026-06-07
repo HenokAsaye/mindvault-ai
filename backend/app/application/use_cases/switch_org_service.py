@@ -7,7 +7,6 @@ from app.domain.ports.inbound.auth.org_switch_inbound_contracts import (
 )
 from app.domain.ports.outbound.token_provider import TokenProvider
 
-
 class SwitchOrganizationService(SwitchOrganizationUseCase):
     def __init__(
         self,

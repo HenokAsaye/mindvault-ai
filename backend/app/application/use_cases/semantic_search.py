@@ -10,7 +10,6 @@ from app.domain.services.citation_policy import (
 )
 from app.domain.value_objects.document import Document
 
-
 class SemanticSearchService:
     def __init__(
         self,

@@ -9,7 +9,6 @@ from app.domain.ports.outbound.vector_store import VectorStore
 from app.domain.services.result_fusion import apply_reciprocal_rank_fusion, fuse_results
 from app.domain.value_objects.document import Document
 
-
 class HybridSearchService:
     def __init__(
         self,

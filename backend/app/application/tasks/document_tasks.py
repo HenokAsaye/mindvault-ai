@@ -6,7 +6,6 @@ from celery import shared_task
 logger = logging.getLogger(__name__)
 TASK_NAME = "mindvault.documents.process_document"
 
-
 @shared_task(
     name=TASK_NAME,
     bind=True,

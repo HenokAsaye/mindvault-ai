@@ -18,7 +18,6 @@ from app.infrastructure.prompts.loader import SYSTEM_PROMPT_TEMPLATE
 
 logger = logging.getLogger(__name__)
 
-
 class ChatService:
     def __init__(
         self,

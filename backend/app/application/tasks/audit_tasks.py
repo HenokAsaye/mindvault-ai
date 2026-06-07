@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 TASK_NAME = "mindvault.audit.record_event"
 
-
 def _persist_audit_sync(
     *,
     event_type: str,
@@ -44,7 +43,6 @@ def _persist_audit_sync(
         raise
     finally:
         session.close()
-
 
 @shared_task(name=TASK_NAME, bind=True)
 def record_audit_event(

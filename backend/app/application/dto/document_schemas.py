@@ -1,11 +1,8 @@
-"""HTTP-facing schemas for the documents API."""
-
 from __future__ import annotations
 
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-
 
 class DocumentResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
@@ -21,14 +18,12 @@ class DocumentResponse(BaseModel):
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
-
 class DocumentListResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     items: list[DocumentResponse]
     total: int
     page: int
     page_size: int
-
 
 class DocumentChunkResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
@@ -38,13 +33,11 @@ class DocumentChunkResponse(BaseModel):
     content_hash: str
     token_count_estimate: int
 
-
 class DocumentChunksResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     document_id: str
     items: list[DocumentChunkResponse]
     total: int
-
 
 class DocumentListQuery(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
