@@ -4,8 +4,6 @@ from abc import ABC, abstractmethod
 
 
 class EmailSender(ABC):
-    """Outbound port for transactional email (invitations, etc.)."""
-
     @abstractmethod
     def send_invitation_email(
         self,
@@ -15,6 +13,4 @@ class EmailSender(ABC):
         org_name: str,
         role: str,
         expires_in_hours: int,
-    ) -> None:
-        """Synchronous send (typically invoked from a Celery worker task)."""
-        ...
+    ) -> None: ...

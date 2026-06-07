@@ -1,15 +1,3 @@
-"""PDF document loader.
-
-Uses ``pypdf`` (pure Python, MIT-licensed) to extract page text. Pages are
-joined with a form-feed separator so downstream chunkers can recover page
-boundaries if needed.
-
-Edge cases:
-  * Encrypted PDFs without a password yield empty text rather than raising.
-  * Non-PDF bytes raise ``ValueError`` with a clear message instead of
-    bubbling pypdf's internal errors to the worker.
-"""
-
 from __future__ import annotations
 
 import io
@@ -39,13 +27,12 @@ class PDFDocumentLoader(DocumentLoader):
 
         if reader.is_encrypted:
             try:
-                # pypdf returns 0 if decryption fails or 1/2 on success.
                 if reader.decrypt("") == 0:
                     logger.warning(
                         "Encrypted PDF could not be decrypted with empty password"
                     )
                     return ""
-            except Exception:  # noqa: BLE001 — decryption can raise broadly
+            except Exception:
                 logger.exception("Failed to decrypt PDF")
                 return ""
 
@@ -53,11 +40,9 @@ class PDFDocumentLoader(DocumentLoader):
         for page_number, page in enumerate(reader.pages, start=1):
             try:
                 text = page.extract_text() or ""
-            except Exception:  # noqa: BLE001 — keep going past poison pages
+            except Exception:
                 logger.exception("Failed to extract text from PDF page %d", page_number)
                 text = ""
             if text:
                 pages.append(text)
-        # Form-feed (\f) is the conventional page separator; chunker treats it
-        # as whitespace.
         return "\n\f\n".join(pages)

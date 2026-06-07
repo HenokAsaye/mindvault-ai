@@ -11,7 +11,7 @@ from app.domain.ports.outbound.organization_repository import OrganizationReposi
 
 def _to_domain(model: OrganizationORM) -> Organization:
     return Organization(
-        id=model.id,
+        id=UUID(model.id) if isinstance(model.id, str) else model.id,
         name=model.name,
         slug=model.slug,
         api_key_hash=model.api_key_hash,

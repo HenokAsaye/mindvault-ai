@@ -1,5 +1,3 @@
-"""Factory for parsing different document types."""
-
 from __future__ import annotations
 
 import logging
@@ -26,8 +24,6 @@ class ParserFactory:
             ".doc": self._docx_parser,
             ".txt": self._text_parser,
             ".text": self._text_parser,
-            # ".md": self._markdown_parser,
-            # ".markdown": self._markdown_parser,
         }
 
     def extract_text(self, file_stream: BinaryIO, file_path: str) -> str:

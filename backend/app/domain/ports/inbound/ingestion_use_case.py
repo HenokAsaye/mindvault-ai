@@ -1,9 +1,3 @@
-"""Inbound ports for the ingestion bounded context.
-
-API/UI/CLI talk to these abstractions; concrete services live in
-``app.application.use_cases``.
-"""
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

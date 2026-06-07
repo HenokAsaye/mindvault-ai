@@ -56,7 +56,6 @@ def test_production_jwt_validation_fails_with_dev_secret(
             JWT_ACTIVE_KID="k1",
             JWT_KEYS="k1:dev-secret",
         )
-    # Restore development settings for subsequent tests.
     _reload_settings_module(
         monkeypatch,
         ENVIRONMENT="development",

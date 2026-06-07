@@ -17,13 +17,19 @@ from app.domain.value_objects.user_role import UserRole
 
 def _to_domain(model: OrganizationMembershipORM) -> OrganizationMembership:
     return OrganizationMembership(
-        id=model.id,
-        org_id=model.org_id,
-        user_id=model.user_id,
+        id=UUID(model.id) if isinstance(model.id, str) else model.id,
+        org_id=UUID(model.org_id) if isinstance(model.org_id, str) else model.org_id,
+        user_id=(
+            UUID(model.user_id) if isinstance(model.user_id, str) else model.user_id
+        ),
         role=UserRole(model.role),
         status=MembershipStatus(model.status),
         joined_at=model.joined_at,
-        invited_by_user_id=model.invited_by_user_id,
+        invited_by_user_id=(
+            UUID(model.invited_by_user_id)
+            if isinstance(model.invited_by_user_id, str) and model.invited_by_user_id
+            else None
+        ),
         created_at=model.created_at,
         updated_at=model.updated_at,
     )

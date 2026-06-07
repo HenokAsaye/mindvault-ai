@@ -17,7 +17,6 @@ target_metadata = Base.metadata
 
 
 def _sync_url(url: str) -> str:
-    # Alembic uses a sync engine.
     return url.replace("+asyncpg", "+psycopg2")
 
 

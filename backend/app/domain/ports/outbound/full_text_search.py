@@ -8,7 +8,4 @@ class FullTextSearch(ABC):
     async def search(
         self, *, query: str, org_id: str, top_k: int = 5
     ) -> List[Document]:
-        """
-        Performs a full-text search for a given query.
-        """
         raise NotImplementedError

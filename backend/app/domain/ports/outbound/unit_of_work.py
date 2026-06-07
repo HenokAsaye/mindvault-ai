@@ -10,11 +10,11 @@ from app.domain.ports.outbound.user_repository import UserRepository
 
 
 class UnitOfWork(ABC):
-    users: UserRepository
-    organizations: OrganizationRepository
-    memberships: MembershipRepository
-    sessions: ChatSessionRepository
-    messages: ChatMessageRepository
+    users: UserRepository | None
+    organizations: OrganizationRepository | None
+    memberships: MembershipRepository | None
+    sessions: ChatSessionRepository | None
+    messages: ChatMessageRepository | None
 
     @abstractmethod
     async def __aenter__(self) -> "UnitOfWork": ...

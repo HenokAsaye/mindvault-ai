@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class NullEmailSender(EmailSender):
-    """No-op when SMTP is disabled or not configured."""
 
     def send_invitation_email(
         self,
@@ -31,11 +30,6 @@ class NullEmailSender(EmailSender):
 
 
 class SmtpEmailSender(EmailSender):
-    """
-    Renders ``invitation_email.mjml`` with Jinja, compiles MJML to HTML via the
-    ``mjml`` CLI, and sends mail over SMTP (e.g. Gmail :587 STARTTLS or Brevo SMTP).
-    """
-
     def __init__(
         self,
         *,

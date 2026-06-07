@@ -1,5 +1,3 @@
-"""HTTP-facing schemas for the documents API."""
-
 from __future__ import annotations
 
 from datetime import datetime

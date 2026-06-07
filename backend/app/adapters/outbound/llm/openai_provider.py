@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import AsyncGenerator
+from typing import AsyncGenerator, cast
 
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, AsyncStream
+from openai.types.chat import ChatCompletionChunk
 
 from app.domain.ports.outbound.llm_port import LLMPort
 
@@ -20,11 +21,14 @@ class OpenAIAdapter(LLMPort):
     ) -> AsyncGenerator[str, None]:
         response = await self._client.chat.completions.create(
             model=self._model,
-            messages=messages,
+            messages=messages,  # type: ignore[arg-type]
             temperature=temperature,
             stream=True,
         )
-        async for chunk in response:
+        stream: AsyncStream[ChatCompletionChunk] = cast(
+            AsyncStream[ChatCompletionChunk], response
+        )
+        async for chunk in stream:
             delta = chunk.choices[0].delta if chunk.choices else None
             if delta and delta.content:
                 yield delta.content

@@ -1,9 +1,3 @@
-"""Loader for plain-text and markdown documents.
-
-Both formats decode as UTF-8 (with replacement on bad bytes) — markdown is
-treated as text for retrieval; we don't try to render or strip syntax.
-"""
-
 from __future__ import annotations
 
 from app.domain.ports.outbound.document_loader import DocumentLoader

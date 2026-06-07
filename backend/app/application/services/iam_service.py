@@ -429,7 +429,6 @@ class IAMService:
                     metadata_json={},
                 )
             )
-            # Flush user row so membership FK is satisfied.
             await session.flush()
             session.add(
                 OrganizationMembershipORM(

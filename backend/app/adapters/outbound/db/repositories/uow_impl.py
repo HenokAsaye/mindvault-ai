@@ -9,7 +9,12 @@ from app.adapters.outbound.db.repositories import (
     organization_repository_impl,
     user_repository_impl,
 )
+from app.domain.ports.outbound.chat_message import ChatMessageRepository
+from app.domain.ports.outbound.chat_session import ChatSessionRepository
+from app.domain.ports.outbound.membership_repository import MembershipRepository
+from app.domain.ports.outbound.organization_repository import OrganizationRepository
 from app.domain.ports.outbound.unit_of_work import UnitOfWork
+from app.domain.ports.outbound.user_repository import UserRepository
 
 
 class SQLAlchemyUnitOfWork(UnitOfWork):
@@ -17,11 +22,11 @@ class SQLAlchemyUnitOfWork(UnitOfWork):
         self._session_factory = session_factory
         self._session: AsyncSession | None = None
         self._committed = False
-        self.users = None
-        self.organizations = None
-        self.memberships = None
-        self.sessions = None
-        self.messages = None
+        self.users: UserRepository | None = None
+        self.organizations: OrganizationRepository | None = None
+        self.memberships: MembershipRepository | None = None
+        self.sessions: ChatSessionRepository | None = None
+        self.messages: ChatMessageRepository | None = None
 
     async def __aenter__(self) -> "SQLAlchemyUnitOfWork":
         self._session = self._session_factory()

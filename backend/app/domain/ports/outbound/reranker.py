@@ -8,7 +8,4 @@ class Reranker(ABC):
     async def rerank(
         self, *, query: str, documents: List[Document], top_k: int = 5
     ) -> List[Document]:
-        """
-        Reranks a list of documents based on a query.
-        """
         raise NotImplementedError

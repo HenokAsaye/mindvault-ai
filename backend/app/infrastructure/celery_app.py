@@ -3,7 +3,7 @@ from __future__ import annotations
 from celery import Celery
 
 from app.infrastructure.config import settings
-from app.application.tasks import audit_tasks, document_tasks, email_tasks  # noqa: F401
+from app.application.tasks import audit_tasks, document_tasks, email_tasks
 
 celery_app = Celery(
     "mindvault",

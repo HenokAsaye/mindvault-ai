@@ -21,7 +21,6 @@ from app.domain.ports.outbound.object_storage import ObjectStorage
 
 logger = logging.getLogger(__name__)
 
-
 _FILENAME_SAFE = re.compile(r"[^A-Za-z0-9._-]+")
 
 

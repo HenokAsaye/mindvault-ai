@@ -20,17 +20,18 @@ class MetricsService:
         self._chunks = chunks or get_chunk_repository()
         self._org_id = org_id
 
-    def get_total_documents(self) -> int:
-        return self._documents.count_by_org(self._org_id)
+    async def get_total_documents(self) -> int:
+        return await self._documents.count_by_org(self._org_id)
 
-    def get_total_chunks(self) -> int:
-        return self._chunks.count_by_org(self._org_id)
+    async def get_total_chunks(self) -> int:
+        return await self._chunks.count_by_org(self._org_id)
 
-    def get_total_failed_documents(self) -> int:
-        return self._documents.count_failed_by_org(self._org_id)
+    async def get_total_failed_documents(self) -> int:
+        return await self._documents.count_failed_by_org(self._org_id)
 
-    def get_average_chunks_per_document(self) -> float:
-        total_docs = self.get_total_documents()
+    async def get_average_chunks_per_document(self) -> float:
+        total_docs = await self.get_total_documents()
         if total_docs == 0:
             return 0.0
-        return self.get_total_chunks() / total_docs
+        total_chunks = await self.get_total_chunks()
+        return total_chunks / total_docs

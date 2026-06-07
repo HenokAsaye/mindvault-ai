@@ -12,7 +12,7 @@ from app.domain.ports.outbound.user_repository import UserRepository
 
 def _to_domain(model: UserORM) -> User:
     return User(
-        id=model.id,
+        id=UUID(model.id) if isinstance(model.id, str) else model.id,
         email=model.email,
         full_name=model.full_name,
         password_hash=model.password_hash,

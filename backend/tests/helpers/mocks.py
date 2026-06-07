@@ -173,11 +173,11 @@ class FakeDocumentRepo:
         if doc and doc.checksum:
             self.by_checksum.pop((org_id, doc.checksum), None)
 
-    def count_by_org(self, org_id: str) -> int:
+    async def count_by_org(self, org_id: str) -> int:
         oid = UUID(org_id) if isinstance(org_id, str) else org_id
         return sum(1 for d in self.documents.values() if d.org_id == oid)
 
-    def count_failed_by_org(self, org_id: str) -> int:
+    async def count_failed_by_org(self, org_id: str) -> int:
         oid = UUID(org_id) if isinstance(org_id, str) else org_id
         return sum(
             1
@@ -193,7 +193,7 @@ class FakeChunkRepo:
     async def list_by_document(self, *, document_id: UUID) -> list:
         return [c for c in self.chunks if c.document_id == document_id]
 
-    def count_by_org(self, org_id: str) -> int:
+    async def count_by_org(self, org_id: str) -> int:
         oid = UUID(org_id) if isinstance(org_id, str) else org_id
         return sum(1 for c in self.chunks if c.org_id == oid)
 

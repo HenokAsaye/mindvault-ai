@@ -16,10 +16,6 @@ class DocumentStatus(str, Enum):
 
 @dataclass(slots=True)
 class Document:
-    """
-    Represents one uploaded knowledge source owned by an organization.
-    """
-
     id: UUID
     org_id: UUID
     title: str

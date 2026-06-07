@@ -27,9 +27,6 @@ class Settings:
     login_soft_lock_seconds: int = int(os.getenv("LOGIN_SOFT_LOCK_SECONDS", "900"))
     login_hard_lock_seconds: int = int(os.getenv("LOGIN_HARD_LOCK_SECONDS", "86400"))
     invitation_signing_secret: str = os.getenv("INVITATION_SIGNING_SECRET", "").strip()
-    # SMTP_* read at access time (see properties below) so workers always see the
-    # current process env — not a snapshot from the first import (fixes empty SMTP
-    # when the worker differs from the API or env is applied after early imports).
     frontend_base_url: str = os.getenv(
         "FRONTEND_BASE_URL", "http://localhost:5173"
     ).rstrip("/")
@@ -38,12 +35,9 @@ class Settings:
         "CELERY_RESULT_BACKEND", "redis://localhost:6379/2"
     )
     celery_task_default_queue: str = os.getenv("CELERY_TASK_DEFAULT_QUEUE", "default")
-    # When set (and different from celery_task_default_queue), invitation emails
-    # route here; worker uses -Q default,email
     celery_email_queue: str = os.getenv("CELERY_EMAIL_QUEUE", "default")
     celery_timezone: str = os.getenv("CELERY_TIMEZONE", "UTC")
 
-    # Document ingestion / chunking
     document_storage_dir: str = os.getenv("DOCUMENT_STORAGE_DIR", "/app/var/storage")
     document_max_size_bytes: int = int(
         os.getenv("DOCUMENT_MAX_SIZE_BYTES", str(25 * 1024 * 1024))
@@ -71,15 +65,12 @@ class Settings:
         ),
     )
 
-    # Vector database (Pinecone)
     pinecone_api_key: str = os.getenv("PINECONE_API_KEY", "")
     pinecone_index_name: str = os.getenv("PINECONE_INDEX_NAME", "mindvault")
 
-    # LLM (OpenAI)
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
-    # Reranker (Cohere)
     cohere_api_key: str = os.getenv("COHERE_API_KEY", "")
 
     @property
@@ -91,7 +82,6 @@ class Settings:
         }
 
     def validate(self) -> None:
-        # Production hardening guardrails.
         if self.environment.lower() in {"prod", "production"}:
             if self.jwt_secret == "dev-secret" or len(self.jwt_secret) < 32:
                 raise RuntimeError(

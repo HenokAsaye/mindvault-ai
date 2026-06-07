@@ -6,7 +6,7 @@ from typing import AsyncGenerator
 
 class LLMPort(ABC):
     @abstractmethod
-    async def generate_response_stream(
+    def generate_response_stream(
         self,
         *,
         messages: list[dict[str, str]],

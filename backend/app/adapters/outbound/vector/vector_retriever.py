@@ -1,5 +1,3 @@
-"""Vector retriever adapter implementation."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -10,8 +8,6 @@ from app.domain.value_objects.document import Document
 
 
 class VectorRetriever:
-    """Retriever using vector embeddings and ANN search."""
-
     def __init__(
         self,
         *,

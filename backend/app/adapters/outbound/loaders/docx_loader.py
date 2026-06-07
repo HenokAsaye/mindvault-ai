@@ -1,10 +1,3 @@
-"""DOCX (Office Open XML) document loader.
-
-Uses ``python-docx`` to walk the document body in order, including paragraphs
-and table cells, so the extracted text preserves the reading order a human
-sees in Word.
-"""
-
 from __future__ import annotations
 
 import io
@@ -37,7 +30,6 @@ class DocxDocumentLoader(DocumentLoader):
             raise ValueError("Invalid or corrupted DOCX file") from exc
 
         parts: list[str] = []
-        # Walk the body in document order so paragraphs and tables stay interleaved.
         body = doc.element.body
         for child in body.iterchildren():
             tag = child.tag

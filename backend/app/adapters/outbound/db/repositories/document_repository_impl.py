@@ -21,8 +21,8 @@ from app.domain.ports.outbound.document_repository import (
 
 def _document_orm_to_entity(row: DocumentORM) -> Document:
     return Document(
-        id=row.id,
-        org_id=row.org_id,
+        id=UUID(row.id) if isinstance(row.id, str) else row.id,
+        org_id=UUID(row.org_id) if isinstance(row.org_id, str) else row.org_id,
         title=row.title,
         source_type=row.source_type,
         storage_url=row.storage_url,
