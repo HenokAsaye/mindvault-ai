@@ -15,6 +15,7 @@ down_revision = "20260502_0003"
 branch_labels = None
 depends_on = None
 
+
 def upgrade() -> None:
     op.drop_index(
         op.f("ix_org_invitations_email"), table_name="organization_invitations"
@@ -54,6 +55,7 @@ def upgrade() -> None:
         unique=False,
     )
     op.drop_constraint(op.f("refresh_tokens_jti_key"), "refresh_tokens", type_="unique")
+
 
 def downgrade() -> None:
     op.create_unique_constraint(

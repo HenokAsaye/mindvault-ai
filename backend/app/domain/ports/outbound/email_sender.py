@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+
 class EmailSender(ABC):
     @abstractmethod
     def send_invitation_email(
@@ -12,5 +13,4 @@ class EmailSender(ABC):
         org_name: str,
         role: str,
         expires_in_hours: int,
-    ) -> None:
-        ...
+    ) -> None: ...

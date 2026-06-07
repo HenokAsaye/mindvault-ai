@@ -15,6 +15,7 @@ from app.domain.ports.outbound.password_hasher import PasswordHasher
 from app.domain.value_objects.membership_status import MembershipStatus
 from app.domain.value_objects.user_role import UserRole
 
+
 class RegisterUserService(RegisterUserUseCase):
     def __init__(self, *, uow_factory, password_hasher: PasswordHasher) -> None:
         self._uow_factory = uow_factory

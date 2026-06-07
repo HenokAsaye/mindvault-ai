@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import FrozenSet
 from uuid import UUID
 
+
 @dataclass(frozen=True, slots=True)
 class TenantContext:
     org_id: UUID

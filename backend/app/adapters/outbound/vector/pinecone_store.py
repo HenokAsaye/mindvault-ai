@@ -11,6 +11,7 @@ from app.domain.ports.outbound.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 
+
 class PineconeVectorStore(VectorStore):
     def __init__(self, api_key: str, index_name: str) -> None:
         logger.info("Initializing Pinecone vector store with index: %s", index_name)
@@ -39,8 +40,11 @@ class PineconeVectorStore(VectorStore):
         self,
         *,
         query_vector: list[float],
-        org_id: UUID | str,
+        org_id: str,
         top_k: int = 5,
+        limit: int = 50,
+        alpha: float = 0.5,
+        user_reranker: bool = True,
         namespace: str | None = None,
     ) -> list[dict[str, Any]]:
         if not query_vector or not len(query_vector):

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+
 @pytest.mark.integration
 def test_health_returns_ok(api_client) -> None:
     response = api_client.get("/health")

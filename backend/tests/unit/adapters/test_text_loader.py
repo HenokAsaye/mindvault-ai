@@ -6,6 +6,7 @@ import pytest
 
 from app.adapters.outbound.loaders.text_loader import TextDocumentLoader
 
+
 @pytest.mark.unit
 class TestTextDocumentLoader:
     def test_supports_text_and_markdown_types(self) -> None:

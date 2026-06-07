@@ -1,6 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 
+
 class ObjectStorage(ABC):
     @abstractmethod
     def put_object(

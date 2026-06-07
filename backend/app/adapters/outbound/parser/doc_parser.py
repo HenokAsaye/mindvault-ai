@@ -9,6 +9,7 @@ from docx.oxml.ns import qn
 
 logger = logging.getLogger(__name__)
 
+
 class DocxParser:
     def extract_text(self, file_stream: BinaryIO) -> str:
         try:

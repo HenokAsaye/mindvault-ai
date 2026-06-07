@@ -6,12 +6,14 @@ import importlib
 
 import pytest
 
+
 def _reload_settings_module(monkeypatch: pytest.MonkeyPatch, **env: str) -> object:
     for key, value in env.items():
         monkeypatch.setenv(key, value)
     import app.infrastructure.config as config_module
 
     return importlib.reload(config_module)
+
 
 @pytest.mark.unit
 def test_settings_jwt_keys_parsing(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -24,6 +26,7 @@ def test_settings_jwt_keys_parsing(monkeypatch: pytest.MonkeyPatch) -> None:
     s = config_module.Settings()
     assert s.jwt_keys["k1"] == "secret-one"
     assert s.jwt_keys["k2"] == "secret-two"
+
 
 @pytest.mark.unit
 def test_document_allowed_source_types_normalized(
@@ -39,6 +42,7 @@ def test_document_allowed_source_types_normalized(
     s = config_module.Settings()
     assert "pdf" in s.document_allowed_source_types
     assert "text" in s.document_allowed_source_types
+
 
 @pytest.mark.unit
 def test_production_jwt_validation_fails_with_dev_secret(

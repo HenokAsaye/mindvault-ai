@@ -16,6 +16,7 @@ _SUPPORTED = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 }
 
+
 class DocxDocumentLoader(DocumentLoader):
     def supports(self, source_type: str) -> bool:
         return (source_type or "").lower() in _SUPPORTED
@@ -42,12 +43,14 @@ class DocxDocumentLoader(DocumentLoader):
                     parts.append("\n".join(rows))
         return "\n\n".join(parts)
 
+
 def _paragraph_text(p_element) -> str:
     runs: list[str] = []
     for t in p_element.iter(qn("w:t")):
         if t.text:
             runs.append(t.text)
     return "".join(runs).strip()
+
 
 def _table_rows(tbl_element) -> list[str]:
     rows: list[str] = []

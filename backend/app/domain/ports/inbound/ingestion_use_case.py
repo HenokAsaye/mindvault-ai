@@ -6,6 +6,7 @@ from uuid import UUID
 
 from app.domain.entities.document import Document
 
+
 @dataclass(slots=True, frozen=True)
 class IngestDocumentCommand:
     org_id: UUID
@@ -15,10 +16,12 @@ class IngestDocumentCommand:
     content_type: str | None
     data: bytes
 
+
 class IngestDocumentUseCase(ABC):
     @abstractmethod
     async def execute(self, command: IngestDocumentCommand) -> Document:
         """Persist the upload and enqueue background processing."""
+
 
 class ProcessDocumentChunksUseCase(ABC):
     @abstractmethod

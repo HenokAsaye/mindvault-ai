@@ -28,6 +28,7 @@ _INVITE_ROLE_VALUES = frozenset(
     {UserRole.OWNER.value, UserRole.ADMIN.value, UserRole.MEMBER.value}
 )
 
+
 class IAMService:
     def __init__(
         self,

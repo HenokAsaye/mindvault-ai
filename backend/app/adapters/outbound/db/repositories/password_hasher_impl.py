@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 
 from app.domain.ports.outbound.password_hasher import PasswordHasher
 
+
 class BcryptPasswordHasher(PasswordHasher):
     def __init__(self) -> None:
         self._ctx = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")

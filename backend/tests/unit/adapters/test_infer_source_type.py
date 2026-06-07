@@ -6,6 +6,7 @@ import pytest
 
 from app.adapters.inbound.api.v1.routes_documents import _infer_source_type
 
+
 @pytest.mark.unit
 class TestInferSourceType:
     def test_from_pdf_content_type(self) -> None:

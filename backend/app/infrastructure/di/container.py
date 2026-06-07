@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from app.infrastructure.di import providers
 
+
 @dataclass(slots=True)
 class Container:
     get_register_user_service = staticmethod(providers.get_register_user_service)

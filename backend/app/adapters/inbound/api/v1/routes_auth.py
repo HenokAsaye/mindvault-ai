@@ -39,6 +39,7 @@ from app.infrastructure.security.permissions import requires_role
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+
 @router.post("/register", response_model=RegisterResponse)
 async def register(
     payload: RegisterRequest,
@@ -61,6 +62,7 @@ async def register(
         user_id=str(result.user_id),
         default_org_id=str(result.default_org_id) if result.default_org_id else None,
     )
+
 
 @router.post("/login", response_model=TokenPairResponse)
 async def login(
@@ -90,6 +92,7 @@ async def login(
         refresh_token=result["refresh_token"],
         token_type=result.get("token_type", "bearer"),
     )
+
 
 @router.post("/switch-org", response_model=SwitchOrgResponse)
 async def switch_org(
@@ -122,6 +125,7 @@ async def switch_org(
         active_org_id=str(result.active_org_id),
     )
 
+
 @router.get("/me", response_model=MeResponse)
 async def me(claims: dict = Depends(get_current_claims)) -> MeResponse:
     return MeResponse(
@@ -129,6 +133,7 @@ async def me(claims: dict = Depends(get_current_claims)) -> MeResponse:
         org_id=str(claims.get("org_id")),
         role=str(claims.get("role", "member")),
     )
+
 
 @router.get("/me/orgs", response_model=OrganizationsListResponse)
 async def list_my_organizations_me(
@@ -141,6 +146,7 @@ async def list_my_organizations_me(
         actor_claims=claims, page=page, page_size=page_size
     )
     return OrganizationsListResponse(**result)
+
 
 @router.post("/refresh", response_model=TokenPairResponse)
 async def refresh_tokens(
@@ -159,12 +165,14 @@ async def refresh_tokens(
         token_type=result["token_type"],
     )
 
+
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(
     claims: dict = Depends(get_current_claims),
     iam_service=Depends(Container.get_iam_service),
 ) -> None:
     await iam_service.logout(access_claims=claims)
+
 
 @router.post("/orgs/{org_id}/invite", response_model=InviteMemberResponse)
 async def invite_member(
@@ -213,6 +221,7 @@ async def invite_member(
         invite_url=invited["invite_url"],
     )
 
+
 @router.post("/invitations/register", response_model=RegisterResponse)
 async def register_via_invitation(
     payload: RegisterViaInvitationRequest,
@@ -238,6 +247,7 @@ async def register_via_invitation(
         default_org_id=result["default_org_id"],
     )
 
+
 @router.post("/invitations/accept", status_code=status.HTTP_204_NO_CONTENT)
 async def accept_invitation(
     payload: AcceptInvitationRequest,
@@ -252,6 +262,7 @@ async def accept_invitation(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
         ) from exc
+
 
 @router.get("/orgs/{org_id}/members", response_model=MembersListResponse)
 async def list_members(
@@ -271,6 +282,7 @@ async def list_members(
         ) from exc
     return MembersListResponse(**result)
 
+
 @router.get("/orgs", response_model=OrganizationsListResponse)
 async def list_my_organizations(
     page: int = Query(1, ge=1),
@@ -282,6 +294,7 @@ async def list_my_organizations(
         actor_claims=claims, page=page, page_size=page_size
     )
     return OrganizationsListResponse(**result)
+
 
 @router.patch("/orgs/{org_id}/members/{user_id}")
 async def patch_member(
@@ -303,6 +316,7 @@ async def patch_member(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
         ) from exc
+
 
 @router.delete(
     "/orgs/{org_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT

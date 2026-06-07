@@ -39,6 +39,7 @@ app.include_router(routes_documents.router, prefix="/api/v1")
 app.include_router(routes_chat.router, prefix="/api/v1")
 app.include_router(routes_search.router, prefix="/api/v1")
 
+
 @app.get("/health", tags=["system"])
 async def health() -> dict[str, str]:
     return {"status": "ok"}

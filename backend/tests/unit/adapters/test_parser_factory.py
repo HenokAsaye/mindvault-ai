@@ -9,6 +9,7 @@ import pytest
 from app.adapters.outbound.parser.parser_factory import ParserFactory
 from app.adapters.outbound.parser.text_parser import TextParser
 
+
 @pytest.mark.unit
 class TestParserFactory:
     def test_extracts_plain_text(self) -> None:
@@ -26,6 +27,7 @@ class TestParserFactory:
         factory = ParserFactory()
         assert factory.is_supported("doc.pdf")
         assert not factory.is_supported("archive.zip")
+
 
 @pytest.mark.unit
 class TestTextParser:

@@ -15,6 +15,7 @@ from app.domain.ports.inbound.auth.registration_inbound_contracts import (
 from app.infrastructure.di.container import Container
 from app.main import app
 
+
 @pytest.mark.integration
 def test_register_success(api_client, monkeypatch) -> None:
     class FakeRegister:
@@ -39,6 +40,7 @@ def test_register_success(api_client, monkeypatch) -> None:
     assert "user_id" in data
     assert "default_org_id" in data
 
+
 @pytest.mark.integration
 def test_register_conflict_on_duplicate(api_client) -> None:
     class FailingRegister:
@@ -60,6 +62,7 @@ def test_register_conflict_on_duplicate(api_client) -> None:
     app.dependency_overrides.pop(Container.get_register_user_service, None)
     assert response.status_code == 409
 
+
 @pytest.mark.integration
 def test_login_success(api_client) -> None:
     class FakeIAM:
@@ -79,10 +82,12 @@ def test_login_success(api_client) -> None:
     assert response.status_code == 200
     assert response.json()["access_token"] == "access"
 
+
 @pytest.mark.integration
 def test_me_requires_auth(api_client) -> None:
     response = api_client.get("/api/v1/auth/me")
     assert response.status_code == 401
+
 
 @pytest.mark.integration
 def test_me_returns_claims(authed_client, auth_claims) -> None:
@@ -91,6 +96,7 @@ def test_me_returns_claims(authed_client, auth_claims) -> None:
     body = response.json()
     assert body["user_id"] == auth_claims["sub"]
     assert body["org_id"] == auth_claims["org_id"]
+
 
 @pytest.mark.integration
 def test_switch_org(authed_client, test_user_id, test_org_id) -> None:

@@ -11,6 +11,7 @@ from app.domain.ports.outbound.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 
+
 class PGVectorStore(VectorStore):
     def __init__(self, engine: Any) -> None:
         self._engine = engine
@@ -86,8 +87,11 @@ class PGVectorStore(VectorStore):
         self,
         *,
         query_vector: list[float],
-        org_id: UUID | str,
+        org_id: str,
         top_k: int = 5,
+        limit: int = 50,
+        alpha: float = 0.5,
+        user_reranker: bool = True,
         namespace: str | None = None,
     ) -> list[dict[str, Any]]:
         if not query_vector or not len(query_vector):
@@ -162,6 +166,7 @@ class PGVectorStore(VectorStore):
                 document_id,
                 org_id,
             )
+
 
 class SyncPGVectorStore:
     def __init__(self, engine: Any) -> None:

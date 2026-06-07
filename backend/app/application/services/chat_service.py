@@ -18,6 +18,7 @@ from app.infrastructure.prompts.loader import SYSTEM_PROMPT_TEMPLATE
 
 logger = logging.getLogger(__name__)
 
+
 class ChatService:
     def __init__(
         self,
@@ -56,7 +57,6 @@ class ChatService:
         citations_as_dicts = [c.__dict__ for c in citations]
 
         async with self._uow_factory() as uow:
-            uow: UnitOfWork
             history = await uow.messages.get_recent_by_session(session_id, limit=6)
 
             user_msg = ChatMessage.create_user_message(
@@ -83,7 +83,6 @@ class ChatService:
             yield chunk
 
         async with self._uow_factory() as uow:
-            uow: UnitOfWork
             ai_msg = ChatMessage.create_assistant_message(
                 session_id=session_id,
                 org_id=org_id,

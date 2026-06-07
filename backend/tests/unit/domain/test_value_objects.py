@@ -8,6 +8,7 @@ from app.domain.entities.document import DocumentStatus
 from app.domain.value_objects.membership_status import MembershipStatus
 from app.domain.value_objects.user_role import UserRole
 
+
 @pytest.mark.unit
 class TestUserRole:
     def test_roles_are_strings(self) -> None:
@@ -16,12 +17,14 @@ class TestUserRole:
         assert UserRole.MEMBER == "member"
         assert UserRole.VIEWER == "viewer"
 
+
 @pytest.mark.unit
 class TestMembershipStatus:
     def test_status_values(self) -> None:
         assert MembershipStatus.INVITED == "invited"
         assert MembershipStatus.ACTIVE == "active"
         assert MembershipStatus.SUSPENDED == "suspended"
+
 
 @pytest.mark.unit
 class TestDocumentStatus:

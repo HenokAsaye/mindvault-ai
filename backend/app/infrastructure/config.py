@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 
+
 class Settings:
     environment: str = os.getenv("ENVIRONMENT", "development")
     database_url: str = os.getenv(
@@ -154,6 +155,7 @@ class Settings:
         if self.smtp_enabled:
             return True
         return bool(self.smtp_password_for_auth)
+
 
 settings = Settings()
 settings.validate()

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+
 @dataclass(slots=True, frozen=True)
 class ChunkingConfig:
     chunk_size_chars: int = 1500
@@ -15,6 +16,7 @@ class ChunkingConfig:
             or self.chunk_overlap_chars >= self.chunk_size_chars
         ):
             raise ValueError("chunk_overlap_chars must be in [0, chunk_size_chars)")
+
 
 def chunk_text(text: str, *, config: ChunkingConfig) -> list[str]:
     normalized = (text or "").strip()
@@ -41,6 +43,7 @@ def chunk_text(text: str, *, config: ChunkingConfig) -> list[str]:
         start = max(end - overlap, start + 1)
     return chunks
 
+
 def _find_safe_break(window: str) -> int:
     paragraph = window.rfind("\n\n")
     if paragraph > len(window) * 0.5:
@@ -53,6 +56,7 @@ def _find_safe_break(window: str) -> int:
         if sentence > len(window) * 0.5:
             return sentence + len(marker)
     return 0
+
 
 def estimate_token_count(text: str) -> int:
     if not text:

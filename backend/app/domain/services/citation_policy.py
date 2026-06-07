@@ -1,6 +1,7 @@
 from typing import List, Dict, Any, Optional
 from app.domain.value_objects.document import Document
 
+
 class Citation:
 
     def __init__(
@@ -36,6 +37,7 @@ class Citation:
     def __hash__(self) -> int:
         return hash((self.source, self.page_number, self.line_from, self.line_to))
 
+
 def extract_citations_from_chunks(chunks: List[Document]) -> List[Citation]:
     citations: Dict[int, Citation] = {}
 
@@ -64,6 +66,7 @@ def extract_citations_from_chunks(chunks: List[Document]) -> List[Citation]:
             citations[hash(citation)] = citation
 
     return list(citations.values())
+
 
 def rank_citations(citations: List[Citation]) -> List[Citation]:
     return sorted(citations, key=lambda c: c.score, reverse=True)

@@ -6,6 +6,7 @@ from app.domain.ports.outbound.embedding_provider import EmbeddingProvider
 from app.domain.ports.outbound.vector_store import VectorStore
 from app.domain.value_objects.document import Document
 
+
 class VectorRetriever:
     def __init__(
         self,

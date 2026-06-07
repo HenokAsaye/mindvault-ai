@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, status
 
 from app.infrastructure.security.auth import get_current_claims
 
+
 def requires_role(*allowed_roles: str) -> Callable:
     allowed = {role.lower() for role in allowed_roles}
 

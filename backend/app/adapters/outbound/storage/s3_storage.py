@@ -4,6 +4,7 @@ from typing import BinaryIO
 
 from app.domain.ports.outbound.storage_port import StoragePort
 
+
 class S3Storage(StoragePort):
     def __init__(self, *, bucket_name: str, access_key: str, secret_key: str) -> None:
         self._bucket_name = bucket_name

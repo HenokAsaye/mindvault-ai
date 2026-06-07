@@ -8,6 +8,7 @@ from app.domain.entities.document import DocumentStatus
 from app.infrastructure.observability.metrics import MetricsService
 from tests.helpers.mocks import FakeChunkRepo, FakeDocumentRepo, make_document
 
+
 @pytest.mark.unit
 class TestMetricsService:
     def test_counts_documents_and_chunks(self) -> None:

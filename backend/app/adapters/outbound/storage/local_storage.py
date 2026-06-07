@@ -10,6 +10,7 @@ from app.domain.ports.outbound.object_storage import ObjectStorage
 FILE_MODE = 0o644
 DIR_MODE = 0o755
 
+
 class LocalObjectStorage(ObjectStorage):
     def __init__(self, *, base_dir: str | Path) -> None:
         self._base_dir = Path(base_dir).resolve()
@@ -56,6 +57,7 @@ class LocalObjectStorage(ObjectStorage):
         except FileNotFoundError:
             return
 
+
 def _parents_below(start: Path, base: Path) -> list[Path]:
     """Return ``[base, ..., start]`` if start is under base else ``[start]``."""
     try:
@@ -68,6 +70,7 @@ def _parents_below(start: Path, base: Path) -> list[Path]:
         cur = cur / part
         chain.append(cur)
     return chain
+
 
 def _ensure_mode(path: Path, mode: int) -> None:
     """Best-effort chmod; ignore if we don't own the file (e.g. existing dir)."""

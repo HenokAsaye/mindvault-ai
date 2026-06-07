@@ -7,6 +7,7 @@ from fastapi import Depends, HTTPException, status
 from app.domain.value_objects.tenant_context import TenantContext
 from app.infrastructure.security.auth import get_current_claims
 
+
 def get_tenant_context(claims: dict = Depends(get_current_claims)) -> TenantContext:
     org_id = claims.get("org_id")
     user_id = claims.get("sub")

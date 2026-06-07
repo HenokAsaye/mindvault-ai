@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 _SUPPORTED = {"pdf", "application/pdf"}
 
+
 class PDFDocumentLoader(DocumentLoader):
     def supports(self, source_type: str) -> bool:
         return (source_type or "").lower() in _SUPPORTED

@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 TASK_NAME = "mindvault.email.send_organization_invitation"
 
+
 @shared_task(
     name=TASK_NAME,
     bind=True,

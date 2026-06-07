@@ -15,6 +15,7 @@ down_revision = "10df2a717cda"
 branch_labels = None
 depends_on = None
 
+
 def upgrade() -> None:
     op.create_table(
         "documents",
@@ -106,6 +107,7 @@ def upgrade() -> None:
         ["org_id", "document_id"],
         unique=False,
     )
+
 
 def downgrade() -> None:
     op.drop_index("ix_chunks_org_document", table_name="document_chunks")

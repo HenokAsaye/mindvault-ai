@@ -9,6 +9,7 @@ import pytest
 from app.infrastructure.di.container import Container
 from app.main import app
 
+
 @pytest.mark.integration
 def test_chat_streams_plain_text(authed_client) -> None:
     class FakeChatService:

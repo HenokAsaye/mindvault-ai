@@ -7,6 +7,7 @@ from app.infrastructure.di.providers import get_token_service
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
+
 async def get_current_claims(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
 ):

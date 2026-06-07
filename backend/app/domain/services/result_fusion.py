@@ -3,6 +3,7 @@ from collections import defaultdict
 from app.domain.value_objects.document import Document
 from app.domain.services.score_normalizer import normalize_scores
 
+
 def fuse_results(
     vector_results: List[Document],
     key_results: List[Document],
@@ -75,6 +76,7 @@ def fuse_results(
     fused_docs.sort(key=lambda d: d.score, reverse=True)
     return fused_docs[:top_k]
 
+
 def remove_duplicates(
     documents: List[Document],
     keep_first: bool = True,
@@ -88,6 +90,7 @@ def remove_duplicates(
             seen[doc.id] = doc
 
     return list(seen.values())
+
 
 def apply_reciprocal_rank_fusion(
     vector_results: List[Document],

@@ -5,6 +5,7 @@ from uuid import UUID
 
 from app.domain.entities.user import User
 
+
 class UserRepository(ABC):
     @abstractmethod
     async def create_user(self, *, user: User) -> User: ...

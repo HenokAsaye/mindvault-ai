@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from app.domain.value_objects.document import Document
 
+
 class FullTextSearch(ABC):
     @abstractmethod
     async def search(

@@ -14,6 +14,7 @@ from app.domain.ports.outbound.email_sender import EmailSender
 
 logger = logging.getLogger(__name__)
 
+
 class NullEmailSender(EmailSender):
 
     def send_invitation_email(
@@ -26,6 +27,7 @@ class NullEmailSender(EmailSender):
         expires_in_hours: int,
     ) -> None:
         return None
+
 
 class SmtpEmailSender(EmailSender):
     def __init__(

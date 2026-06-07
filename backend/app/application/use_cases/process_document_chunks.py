@@ -22,6 +22,7 @@ from app.domain.services.chunking_policy import (
 
 logger = logging.getLogger(__name__)
 
+
 class ProcessDocumentChunksService(ProcessDocumentChunksUseCase):
     def __init__(
         self,

@@ -9,8 +9,10 @@ from app.domain.entities.chat_session import ChatSession
 from app.domain.ports.outbound.chat_session import ChatSessionRepository
 from app.adapters.outbound.db.sqlalchemy_models import ChatSessionORM
 
+
 class NotFound(Exception):
     pass
+
 
 class ChatSessionRepositoryImplementation(ChatSessionRepository):
     def __init__(self, db_session: AsyncSession) -> None:

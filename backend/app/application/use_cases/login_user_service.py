@@ -8,6 +8,7 @@ from app.domain.ports.inbound.auth.login_inbound_contracts import (
 from app.domain.ports.outbound.password_hasher import PasswordHasher
 from app.domain.ports.outbound.token_provider import TokenProvider
 
+
 class LoginUserService(LoginUseCase):
     def __init__(
         self,

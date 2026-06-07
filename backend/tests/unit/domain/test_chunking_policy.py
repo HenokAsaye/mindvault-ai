@@ -10,6 +10,7 @@ from app.domain.services.chunking_policy import (
     estimate_token_count,
 )
 
+
 @pytest.mark.unit
 class TestChunkingConfig:
     def test_valid_defaults(self) -> None:
@@ -24,6 +25,7 @@ class TestChunkingConfig:
     def test_rejects_overlap_ge_size(self) -> None:
         with pytest.raises(ValueError, match="chunk_overlap"):
             ChunkingConfig(chunk_size_chars=100, chunk_overlap_chars=100)
+
 
 @pytest.mark.unit
 class TestChunkText:
@@ -50,6 +52,7 @@ class TestChunkText:
         cfg = ChunkingConfig(chunk_size_chars=80, chunk_overlap_chars=20)
         chunks = chunk_text(text, config=cfg)
         assert len(chunks) > 1
+
 
 @pytest.mark.unit
 class TestEstimateTokenCount:

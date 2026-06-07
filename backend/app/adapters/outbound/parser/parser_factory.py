@@ -10,6 +10,7 @@ from app.adapters.outbound.parser.text_parser import TextParser, MarkdownParser
 
 logger = logging.getLogger(__name__)
 
+
 class ParserFactory:
     def __init__(self):
         self._pdf_parser = PDFParser()

@@ -18,6 +18,7 @@ from app.domain.value_objects.membership_status import MembershipStatus
 from app.domain.value_objects.user_role import UserRole
 from tests.helpers.mocks import FakeMembershipRepo, FakeUoW, FakeUserRepo, uow_factory
 
+
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_login_returns_token_pair() -> None:
@@ -62,6 +63,7 @@ async def test_login_returns_token_pair() -> None:
     assert result.access_token
     assert result.refresh_token
     assert uow.committed
+
 
 @pytest.mark.unit
 @pytest.mark.asyncio

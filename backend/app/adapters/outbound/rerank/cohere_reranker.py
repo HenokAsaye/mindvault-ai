@@ -3,6 +3,7 @@ import cohere
 from app.domain.ports.outbound.reranker import Reranker
 from app.domain.value_objects.document import Document
 
+
 class CohereReranker(Reranker):
     def __init__(self, api_key: str):
         self.client = cohere.AsyncClient(api_key)

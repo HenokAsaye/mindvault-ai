@@ -1,13 +1,15 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional
 import logging
 
 from app.domain.value_objects.document import Document
 from app.domain.ports.retriever import Retriever
+from app.domain.ports.outbound.reranker import Reranker
 from app.domain.services.result_fusion import fuse_results, apply_reciprocal_rank_fusion
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass(slots=True, frozen=True)
 class RetrievalConfig:
@@ -24,7 +26,6 @@ class RetrievalConfig:
     alpha: float = 0.5
     user_reranker: bool = False
 
-Reranker = Protocol
 
 class RetrievalPolicy:
     def __init__(
@@ -32,7 +33,7 @@ class RetrievalPolicy:
         vector_retriever: Retriever,
         key_retriever: Retriever,
         config: RetrievalConfig,
-        reranker: Optional[Reranker] = None,
+        reranker: Reranker | None = None,
     ) -> None:
         self.vector_retriever = vector_retriever
         self.key_retriever = key_retriever
@@ -123,7 +124,7 @@ class RetrievalPolicy:
         try:
             import asyncio
 
-            vector_results, key_results = await asyncio.gather(
+            raw_vector, raw_key = await asyncio.gather(
                 self.vector_retriever.retrieve(
                     query=query,
                     top_k=intermediate_k,
@@ -137,12 +138,17 @@ class RetrievalPolicy:
                 return_exceptions=True,
             )
 
-            if isinstance(vector_results, Exception):
-                logger.warning(f"Vector retriever failed: {vector_results}")
-                vector_results = []
-            if isinstance(key_results, Exception):
-                logger.warning(f"Key retriever failed: {key_results}")
-                key_results = []
+            vector_results: list[Document] = (
+                [] if isinstance(raw_vector, BaseException) else raw_vector
+            )
+            key_results: list[Document] = (
+                [] if isinstance(raw_key, BaseException) else raw_key
+            )
+
+            if isinstance(raw_vector, Exception):
+                logger.warning(f"Vector retriever failed: {raw_vector}")
+            if isinstance(raw_key, Exception):
+                logger.warning(f"Key retriever failed: {raw_key}")
 
             if not vector_results and not key_results:
                 logger.warning("Both retrievers failed or returned empty")
@@ -180,7 +186,7 @@ class RetrievalPolicy:
                     top_k=top_k,
                 )
             logger.info(f"Fusion produced {len(fused_results)} results")
-        if self.config.rerank_enabled and self.reranker:
+        if self.config.rerank_enabled and self.reranker is not None:
             rerank_candidates = fused_results[: self.config.rerank_top_n]
             logger.info(f"Reranking top-{len(rerank_candidates)} candidates")
 

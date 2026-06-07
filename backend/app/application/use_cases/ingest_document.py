@@ -23,9 +23,11 @@ logger = logging.getLogger(__name__)
 
 _FILENAME_SAFE = re.compile(r"[^A-Za-z0-9._-]+")
 
+
 def _safe_filename(title: str, fallback: str = "document") -> str:
     base = _FILENAME_SAFE.sub("_", (title or "").strip()).strip("._-")
     return base or fallback
+
 
 class IngestDocumentService(IngestDocumentUseCase):
     def __init__(

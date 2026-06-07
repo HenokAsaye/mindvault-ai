@@ -8,6 +8,7 @@ import jwt
 
 from app.domain.ports.outbound.token_provider import TokenProvider
 
+
 class JwtTokenProvider(TokenProvider):
     def __init__(
         self,
